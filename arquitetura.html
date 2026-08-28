@@ -1,0 +1,229 @@
+<title>Base do Farol</title>
+<meta name="description" content="Esboço da camada de dados que ficaria por baixo do Farol: de onde os números viriam, como seriam cruzados, e o que falta construir.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --page: #f6f5f0;
+    --surface: #ffffff;
+    --surface-2: #fbfaf5;
+    --ink: #17160f;
+    --ink-secondary: #57544a;
+    --ink-muted: #8b8779;
+    --border: rgba(23,22,15,0.12);
+    --border-strong: rgba(23,22,15,0.28);
+    --accent: #2a78d6;
+    --accent-soft: rgba(42,120,214,0.10);
+    --built-fill: var(--surface);
+    --todo-fill: rgba(23,22,15,0.03);
+    --layer-fill: rgba(42,120,214,0.05);
+    --layer-border: rgba(42,120,214,0.22);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --page: #0d0d0c;
+      --surface: #1a1a19;
+      --surface-2: #201f1d;
+      --ink: #ffffff;
+      --ink-secondary: #c3c2b7;
+      --ink-muted: #918f85;
+      --border: rgba(255,255,255,0.14);
+      --border-strong: rgba(255,255,255,0.32);
+      --accent: #3987e5;
+      --accent-soft: rgba(57,135,229,0.14);
+      --built-fill: var(--surface);
+      --todo-fill: rgba(255,255,255,0.04);
+      --layer-fill: rgba(57,135,229,0.07);
+      --layer-border: rgba(57,135,229,0.28);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page: #0d0d0c;
+    --surface: #1a1a19;
+    --surface-2: #201f1d;
+    --ink: #ffffff;
+    --ink-secondary: #c3c2b7;
+    --ink-muted: #918f85;
+    --border: rgba(255,255,255,0.14);
+    --border-strong: rgba(255,255,255,0.32);
+    --accent: #3987e5;
+    --accent-soft: rgba(57,135,229,0.14);
+    --built-fill: var(--surface);
+    --todo-fill: rgba(255,255,255,0.04);
+    --layer-fill: rgba(57,135,229,0.07);
+    --layer-border: rgba(57,135,229,0.28);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font:400 15px/1.6 'IBM Plex Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2{font-family:'Archivo', system-ui, sans-serif; margin:0; text-wrap:balance;}
+  .mono{font-family:'IBM Plex Mono', ui-monospace, monospace;}
+  a{color:var(--accent);}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .wrap{max-width:760px; margin:0 auto; padding:48px 24px 80px;}
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:6px; font:600 11px/1 'IBM Plex Mono';
+    text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin-bottom:14px;
+  }
+  h1{font-size:30px; font-weight:800; letter-spacing:-0.015em; margin-bottom:12px;}
+  .lede{font-size:16px; line-height:1.65; color:var(--ink-secondary); max-width:62ch; margin-bottom:8px;}
+  .lede + .lede{margin-top:10px;}
+
+  figure{margin:36px 0 8px; padding:0;}
+  .diagram-frame{
+    border:1px solid var(--border); border-radius:16px; background:var(--surface); padding:20px 16px;
+  }
+  svg{display:block; width:100%; height:auto;}
+  figcaption{
+    margin-top:12px; font-size:12.5px; color:var(--ink-muted); line-height:1.55; max-width:64ch;
+  }
+  figcaption b{color:var(--ink-secondary); font-weight:600;}
+
+  .legend-row{display:flex; gap:20px; flex-wrap:wrap; margin:14px 0 40px; font-size:12px; color:var(--ink-muted);}
+  .legend-row .li{display:flex; align-items:center; gap:7px;}
+  .swatch{width:16px; height:11px; border-radius:3px; flex:none;}
+  .swatch.built{background:var(--surface); border:1.5px solid var(--border-strong);}
+  .swatch.todo{background:var(--todo-fill); border:1.5px dashed var(--border-strong);}
+
+  h2{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-muted); font-weight:700; margin-bottom:16px;}
+
+  .sources{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:40px;}
+  @media (max-width:680px){ .sources{grid-template-columns:1fr;} }
+  .src-card{border:1px solid var(--border); border-radius:12px; padding:16px; background:var(--surface);}
+  .src-card h3{font:700 14px/1.3 'IBM Plex Sans'; margin:0 0 10px;}
+  .src-card dl{margin:0; display:flex; flex-direction:column; gap:8px;}
+  .src-card dt{font:600 10px/1 'IBM Plex Mono'; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); margin-bottom:2px;}
+  .src-card dd{margin:0; font-size:12.5px; color:var(--ink-secondary); line-height:1.5;}
+
+  .reco{
+    border-radius:14px; background:var(--accent-soft); border:1px solid var(--layer-border);
+    padding:18px 20px; font-size:14px; line-height:1.6; color:var(--ink);
+  }
+  .reco b{font:700 11px/1 'IBM Plex Mono'; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); display:block; margin-bottom:8px;}
+
+  footer{margin-top:48px; padding-top:18px; border-top:1px solid var(--border); font-size:11.5px; color:var(--ink-muted);}
+</style>
+
+<div class="wrap">
+
+  <span class="eyebrow">● esboço técnico · farol</span>
+  <h1>O que teria que existir por baixo do Farol</h1>
+  <p class="lede">Hoje o painel mostra números inventados. O diagrama abaixo é a camada que faltaria construir por baixo dele para esses números virarem reais — de onde os dados entram, como são cruzados entre si, e o que cada empresa investida precisaria te mandar.</p>
+  <p class="lede">Uma camada só, com três jeitos de alimentar ela — não é preciso escolher um único caminho por empresa.</p>
+
+  <figure>
+    <div class="diagram-frame">
+      <svg viewBox="0 0 760 590" role="img" aria-label="O Farol fica acima de uma nova camada de dados: três fontes (extrato bancário via Open Finance, balancete em PDF lido por IA, e planilha manual) alimentam um motor de normalização e conciliação, que grava numa base por empresa; essa base serve os números reais de volta para o Farol.">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- existing layer: Farol -->
+        <rect x="230" y="14" width="300" height="64" rx="12" style="fill:var(--built-fill);stroke:var(--border-strong);" stroke-width="1.5"/>
+        <text x="380" y="40" text-anchor="middle" font-family="Archivo" font-weight="700" font-size="15" fill="currentColor">Farol</text>
+        <text x="380" y="59" text-anchor="middle" font-family="IBM Plex Sans" font-size="11" fill="currentColor" opacity="0.62">painel do investidor · 10 empresas</text>
+
+        <!-- new layer container -->
+        <rect x="10" y="118" width="740" height="452" rx="16" style="fill:var(--layer-fill);stroke:var(--layer-border);" stroke-width="1.5" stroke-dasharray="5,5"/>
+        <text x="32" y="144" font-family="IBM Plex Mono" font-weight="600" font-size="11" letter-spacing="0.04em" style="fill:var(--accent);">CAMADA DE DADOS — A CONSTRUIR</text>
+
+        <!-- Base por empresa -->
+        <rect x="230" y="168" width="300" height="58" rx="10" style="fill:var(--todo-fill);stroke:var(--border-strong);" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <text x="380" y="192" text-anchor="middle" font-family="IBM Plex Sans" font-weight="600" font-size="13" fill="currentColor">Base por empresa</text>
+        <text x="380" y="209" text-anchor="middle" font-family="IBM Plex Sans" font-size="10.5" fill="currentColor" opacity="0.62">histórico versionado · nunca sobrescreve</text>
+
+        <!-- arrow Base -> Farol -->
+        <line x1="380" y1="168" x2="380" y2="82" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text x="398" y="122" font-family="IBM Plex Mono" font-size="10.5" fill="currentColor" opacity="0.75">serve os números via API</text>
+
+        <!-- Engine -->
+        <rect x="170" y="284" width="420" height="76" rx="10" style="fill:var(--todo-fill);stroke:var(--border-strong);" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <text x="380" y="310" text-anchor="middle" font-family="IBM Plex Sans" font-weight="600" font-size="13" fill="currentColor">Normalização &amp; Conciliação</text>
+        <text x="380" y="328" text-anchor="middle" font-family="IBM Plex Sans" font-size="10.5" fill="currentColor" opacity="0.62">mapeia pro esquema comum</text>
+        <text x="380" y="343" text-anchor="middle" font-family="IBM Plex Sans" font-size="10.5" fill="currentColor" opacity="0.62">cruza reportado × banco · marca divergência</text>
+
+        <!-- arrow Engine -> Base -->
+        <line x1="380" y1="284" x2="380" y2="226" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text x="398" y="259" font-family="IBM Plex Mono" font-size="10.5" fill="currentColor" opacity="0.75">grava histórico</text>
+
+        <!-- sources -->
+        <rect x="26" y="452" width="220" height="80" rx="10" style="fill:var(--todo-fill);stroke:var(--border-strong);" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <text x="136" y="480" text-anchor="middle" font-family="IBM Plex Sans" font-weight="600" font-size="12.5" fill="currentColor">Extrato bancário</text>
+        <text x="136" y="497" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="currentColor" opacity="0.62">Open Finance</text>
+        <text x="136" y="511" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="currentColor" opacity="0.62">(Pluggy / Belvo)</text>
+
+        <rect x="270" y="452" width="220" height="80" rx="10" style="fill:var(--built-fill);stroke:var(--border-strong);" stroke-width="1.5"/>
+        <text x="380" y="480" text-anchor="middle" font-family="IBM Plex Sans" font-weight="600" font-size="12.5" fill="currentColor">Balancete / DRE</text>
+        <text x="380" y="497" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="currentColor" opacity="0.62">PDF enviado pela empresa</text>
+        <text x="380" y="511" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="currentColor" opacity="0.62">lido por IA · já esboçado no Farol</text>
+
+        <rect x="514" y="452" width="220" height="80" rx="10" style="fill:var(--todo-fill);stroke:var(--border-strong);" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <text x="624" y="480" text-anchor="middle" font-family="IBM Plex Sans" font-weight="600" font-size="12.5" fill="currentColor">Planilha manual</text>
+        <text x="624" y="497" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="currentColor" opacity="0.62">fallback</text>
+        <text x="624" y="511" text-anchor="middle" font-family="IBM Plex Sans" font-size="10" fill="currentColor" opacity="0.62">sem integração</text>
+
+        <!-- arrows sources -> engine -->
+        <line x1="136" y1="452" x2="250" y2="360" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text x="126" y="418" font-family="IBM Plex Mono" font-size="10" fill="currentColor" opacity="0.75">sync diário</text>
+
+        <line x1="380" y1="452" x2="380" y2="360" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text x="398" y="418" font-family="IBM Plex Mono" font-size="10" fill="currentColor" opacity="0.75">IA lê · mensal</text>
+
+        <line x1="624" y1="452" x2="510" y2="360" stroke="currentColor" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <text x="560" y="418" font-family="IBM Plex Mono" font-size="10" fill="currentColor" opacity="0.75">importa manual</text>
+      </svg>
+    </div>
+    <figcaption><b>O que o diagrama mostra:</b> as três fontes na base alimentam um motor que normaliza os formatos e cruza o que a empresa reportou contra o extrato bancário real; o resultado fica numa base por empresa, que passa a servir os números do Farol no lugar dos fictícios de hoje.</figcaption>
+  </figure>
+
+  <div class="legend-row">
+    <div class="li"><span class="swatch built"></span>contorno sólido = já existe (mesmo que simulado no protótipo)</div>
+    <div class="li"><span class="swatch todo"></span>contorno tracejado = ainda por construir</div>
+  </div>
+
+  <h2>Avaliando as três fontes</h2>
+  <div class="sources">
+    <div class="src-card">
+      <h3>Extrato bancário</h3>
+      <dl>
+        <dt>Cadência</dt><dd>Automática, diária.</dd>
+        <dt>Confiabilidade</dt><dd>Alta — não depende da empresa mandar nada, é o caixa de verdade.</dd>
+        <dt>Esforço</dt><dd>Contratar um agregador (Pluggy/Belvo) e colher o consentimento de cada empresa — dias a semanas, não minutos.</dd>
+      </dl>
+    </div>
+    <div class="src-card">
+      <h3>Balancete / DRE</h3>
+      <dl>
+        <dt>Cadência</dt><dd>Mensal, quando o contador fecha o mês.</dd>
+        <dt>Confiabilidade</dt><dd>Média — é o que a empresa reporta, pode estar desatualizado.</dd>
+        <dt>Esforço</dt><dd>A leitura por IA já está esboçada no Farol (simulada); falta plugar num backend que leia de verdade.</dd>
+      </dl>
+    </div>
+    <div class="src-card">
+      <h3>Planilha manual</h3>
+      <dl>
+        <dt>Cadência</dt><dd>Quando alguém lembrar de atualizar.</dd>
+        <dt>Confiabilidade</dt><dd>Baixa — o mesmo nível autorreportado de hoje, sem checagem cruzada.</dd>
+        <dt>Esforço</dt><dd>Quase zero — é o caminho pra empresa que ainda não tem nada integrado.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="reco">
+    <b>Por onde eu começaria</b>
+    Não as três fontes de uma vez. Plugar o extrato bancário — a mais confiável e a mais rápida de conectar tecnicamente — nas 2-3 empresas que hoje estão em "Observar" ou "Reestruturar" no painel, e deixar balancete e planilha como estão até esse piloto provar que vale o esforço de expandir.
+  </div>
+
+  <footer>Base do Farol — esboço para avaliação, sem código de produção. Companheiro do <a href="index.html">painel Farol do Portfólio</a>.</footer>
+
+</div>

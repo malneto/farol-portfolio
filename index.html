@@ -1,0 +1,1053 @@
+<title>Farol do Portfólio</title>
+<meta name="description" content="Protótipo de painel para investidor acompanhar CAC, LTV, evolução e status (investir/manter/sair) de 10 empresas do portfólio.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --page: #f6f5f0;
+    --surface: #ffffff;
+    --surface-2: #fbfaf5;
+    --ink: #17160f;
+    --ink-secondary: #57544a;
+    --ink-muted: #8b8779;
+    --border: rgba(23,22,15,0.10);
+    --border-strong: rgba(23,22,15,0.20);
+    --accent: #2a78d6;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(42,120,214,0.12);
+    --series-2: #eb6834;
+    --good: #0ca30c;
+    --good-soft: rgba(12,163,12,0.12);
+    --warning: #fab219;
+    --warning-soft: rgba(250,178,25,0.20);
+    --serious: #ec835a;
+    --serious-soft: rgba(236,131,90,0.20);
+    --critical: #d03b3b;
+    --critical-soft: rgba(208,59,59,0.12);
+    --neutral-status: #6b6a63;
+    --neutral-status-soft: rgba(107,106,99,0.12);
+    --grid: #e4e2d9;
+    --baseline: #c8c6ba;
+    --shadow: 0 1px 2px rgba(23,22,15,.04), 0 8px 24px -12px rgba(23,22,15,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --page: #0d0d0c;
+      --surface: #1a1a19;
+      --surface-2: #201f1d;
+      --ink: #ffffff;
+      --ink-secondary: #c3c2b7;
+      --ink-muted: #918f85;
+      --border: rgba(255,255,255,0.10);
+      --border-strong: rgba(255,255,255,0.20);
+      --accent: #3987e5;
+      --accent-ink: #ffffff;
+      --accent-soft: rgba(57,135,229,0.20);
+      --series-2: #d95926;
+      --good: #0ca30c;
+      --good-soft: rgba(12,163,12,0.20);
+      --warning: #fab219;
+      --warning-soft: rgba(250,178,25,0.20);
+      --serious: #ec835a;
+      --serious-soft: rgba(236,131,90,0.20);
+      --critical: #d03b3b;
+      --critical-soft: rgba(208,59,59,0.22);
+      --neutral-status: #a8a69b;
+      --neutral-status-soft: rgba(255,255,255,0.10);
+      --grid: #2c2c2a;
+      --baseline: #3d3d3a;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page: #0d0d0c;
+    --surface: #1a1a19;
+    --surface-2: #201f1d;
+    --ink: #ffffff;
+    --ink-secondary: #c3c2b7;
+    --ink-muted: #918f85;
+    --border: rgba(255,255,255,0.10);
+    --border-strong: rgba(255,255,255,0.20);
+    --accent: #3987e5;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(57,135,229,0.20);
+    --series-2: #d95926;
+    --good: #0ca30c;
+    --good-soft: rgba(12,163,12,0.20);
+    --warning: #fab219;
+    --warning-soft: rgba(250,178,25,0.20);
+    --serious: #ec835a;
+    --serious-soft: rgba(236,131,90,0.20);
+    --critical: #d03b3b;
+    --critical-soft: rgba(208,59,59,0.22);
+    --neutral-status: #a8a69b;
+    --neutral-status-soft: rgba(255,255,255,0.10);
+    --grid: #2c2c2a;
+    --baseline: #3d3d3a;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font:400 14px/1.5 'IBM Plex Sans', system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  h1,h2,h3{font-family:'Archivo', system-ui, sans-serif; margin:0; text-wrap:balance;}
+  .mono{font-family:'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric:tabular-nums;}
+  a{color:var(--accent);}
+  button{font:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 24px 80px;}
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+    flex-wrap:wrap; margin-bottom:28px; padding-bottom:20px; border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px; background:var(--ink); color:var(--page);
+    display:flex; align-items:center; justify-content:center; font:800 16px/1 'Archivo', sans-serif; flex:none;
+  }
+  .brand h1{font-size:21px; font-weight:800; letter-spacing:-0.01em;}
+  .brand .tag{display:block; font:500 12px/1.4 'IBM Plex Sans'; color:var(--ink-muted); margin-top:2px;}
+  .topbar-meta{text-align:right; font-size:12px; color:var(--ink-muted);}
+  .topbar-meta .proto{
+    display:inline-flex; align-items:center; gap:6px; padding:3px 9px; border-radius:999px;
+    background:var(--accent-soft); color:var(--accent); font:600 11px/1.4 'IBM Plex Sans';
+    letter-spacing:.02em; text-transform:uppercase; margin-bottom:6px;
+  }
+
+  /* ---------- kpis ---------- */
+  .kpis{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:1px;
+    background:var(--border); border:1px solid var(--border); border-radius:14px; overflow:hidden;
+    margin-bottom:28px; box-shadow:var(--shadow);
+  }
+  .kpi{background:var(--surface); padding:18px 20px;}
+  .kpi .label{font-size:12px; color:var(--ink-muted); margin-bottom:8px;}
+  .kpi .value{font:700 26px/1.1 'Archivo', sans-serif; letter-spacing:-0.01em;}
+  .kpi .value small{font-size:14px; font-weight:600; color:var(--ink-secondary); margin-left:2px;}
+  .kpi .delta{margin-top:6px; font-size:12px; font-weight:600;}
+  .kpi .delta.up{color:var(--good);}
+  .kpi .delta.down{color:var(--critical);}
+  .kpi.alert .value{color:var(--critical);}
+
+  /* ---------- controls ---------- */
+  .controls{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .chips{display:flex; gap:8px; flex-wrap:wrap;}
+  .filter-chip{
+    border:1px solid var(--border); background:var(--surface); color:var(--ink-secondary);
+    border-radius:999px; padding:6px 13px; font-size:12.5px; font-weight:600; cursor:pointer;
+    display:flex; align-items:center; gap:7px; transition:border-color .15s, color .15s, background .15s;
+  }
+  .filter-chip .n{
+    font-family:'IBM Plex Mono'; font-size:11px; background:var(--page); color:var(--ink-muted);
+    border-radius:999px; padding:1px 6px;
+  }
+  .filter-chip:hover{border-color:var(--border-strong); color:var(--ink);}
+  .filter-chip.active{background:var(--ink); border-color:var(--ink); color:var(--page);}
+  .filter-chip.active .n{background:rgba(255,255,255,.15); color:var(--page);}
+
+  .sort-row{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-muted);}
+  select{
+    font:600 12.5px 'IBM Plex Sans'; color:var(--ink); background:var(--surface);
+    border:1px solid var(--border); border-radius:8px; padding:6px 10px; cursor:pointer;
+  }
+
+  /* ---------- chip / status ---------- */
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; padding:4px 10px 4px 8px; border-radius:999px;
+    font:600 11.5px/1 'IBM Plex Sans'; letter-spacing:.01em; white-space:nowrap; color:var(--ink);
+  }
+  .chip .dot{width:7px; height:7px; border-radius:50%; flex:none;}
+  .status-invest{background:var(--good-soft);} .status-invest .dot{background:var(--good);}
+  .status-hold{background:var(--neutral-status-soft);} .status-hold .dot{background:var(--neutral-status);}
+  .status-watch{background:var(--warning-soft);} .status-watch .dot{background:var(--warning);}
+  .status-restructure{background:var(--serious-soft);} .status-restructure .dot{background:var(--serious);}
+  .status-exit{background:var(--critical-soft);} .status-exit .dot{background:var(--critical);}
+
+  .tag-sector{
+    display:inline-block; font-size:11.5px; color:var(--ink-muted); text-transform:uppercase;
+    letter-spacing:.03em; font-weight:600;
+  }
+
+  /* ---------- grid & cards ---------- */
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px;
+    margin-bottom:36px;
+  }
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px;
+    display:flex; flex-direction:column; gap:12px; cursor:pointer;
+    transition:border-color .15s, transform .15s, box-shadow .15s;
+  }
+  .card:hover{border-color:var(--border-strong); transform:translateY(-2px); box-shadow:var(--shadow);}
+  .card.is-open{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent);}
+  .card-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
+  .card-head h3{font-size:15.5px; font-weight:700; letter-spacing:-0.005em;}
+  .card-spark{width:100%; height:46px; display:block;}
+  .card-metrics{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding-top:10px; border-top:1px solid var(--border);
+  }
+  .card-metrics .m .l{font-size:10.5px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em;}
+  .card-metrics .m .v{font-family:'IBM Plex Mono'; font-size:13px; font-weight:500; margin-top:2px; font-variant-numeric:tabular-nums;}
+  .card-bottleneck{font-size:12px; color:var(--ink-secondary); line-height:1.45;}
+  .card-bottleneck b{color:var(--ink-muted); font-weight:600; text-transform:uppercase; font-size:10px; letter-spacing:.03em; display:block; margin-bottom:3px;}
+
+  /* ---------- detail ---------- */
+  .detail{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px;
+    margin-bottom:36px; box-shadow:var(--shadow); scroll-margin-top:20px;
+  }
+  .detail[hidden]{display:none;}
+  .detail-top{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+  .detail-title{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .detail-title h2{font-size:22px;}
+  .detail-sub{margin-top:6px; font-size:12.5px; color:var(--ink-muted);}
+  .detail-sub span{color:var(--ink-secondary); font-weight:600;}
+  .close-btn{
+    border:1px solid var(--border); background:var(--surface); color:var(--ink-muted); border-radius:8px;
+    width:30px; height:30px; cursor:pointer; font-size:16px; line-height:1; flex:none;
+  }
+  .close-btn:hover{color:var(--ink); border-color:var(--border-strong);}
+
+  .group-label{
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted);
+    margin:20px 0 8px;
+  }
+  .detail-top + .group-label{margin-top:22px;}
+  .detail-kpis{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1px; background:var(--border);
+    border:1px solid var(--border); border-radius:12px; overflow:hidden; margin:0 0 20px;
+  }
+  .detail-kpis .k{background:var(--surface-2); padding:12px 14px;}
+  .detail-kpis .k .l{font-size:11px; color:var(--ink-muted);}
+  .detail-kpis .k .v{font-family:'IBM Plex Mono'; font-size:17px; font-weight:600; margin-top:4px;}
+  .detail-kpis .k .d{font-size:11px; margin-top:3px; font-weight:600;}
+  .detail-kpis .k .d.up{color:var(--good);} .detail-kpis .k .d.down{color:var(--critical);}
+
+  .detail-table-wrap{box-shadow:none;}
+  .detail-table-wrap table{min-width:0;}
+  .detail-table-wrap thead th{cursor:default;}
+  .detail-table-wrap thead th:hover{color:var(--ink-muted);}
+
+  .chart-block{margin-top:22px;}
+  .chart-block h4{font-size:13px; font-weight:600; color:var(--ink-secondary); margin-bottom:2px;}
+  .chart-block .sub{font-size:11.5px; color:var(--ink-muted); margin-bottom:10px;}
+  .legend-row{display:flex; gap:16px; margin-bottom:8px;}
+  .legend-row .item{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-secondary); font-weight:600;}
+  .legend-row .item .k{width:12px; height:2px; border-radius:1px;}
+
+  .chart-wrap{position:relative;}
+  .chart-wrap svg{width:100%; height:auto; display:block; overflow:visible;}
+  .chart-tip{
+    position:absolute; pointer-events:none; background:var(--ink); color:var(--page);
+    border-radius:8px; padding:8px 10px; font-size:11.5px; line-height:1.5; box-shadow:var(--shadow);
+    transform:translate(-50%,-100%); top:0; left:0; opacity:0; transition:opacity .1s; white-space:nowrap; z-index:5;
+  }
+  .chart-tip.show{opacity:1;}
+  .chart-tip .t-date{color:var(--ink-muted); font-weight:600; margin-bottom:3px; text-transform:uppercase; font-size:10px; letter-spacing:.03em;}
+  .chart-tip .t-row{display:flex; align-items:center; gap:6px;}
+  .chart-tip .t-row .k{width:8px; height:2px; border-radius:1px; flex:none;}
+  .chart-tip .t-row .val{font-family:'IBM Plex Mono'; font-weight:600; margin-left:auto; padding-left:10px;}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  @media (max-width:820px){ .two-col{grid-template-columns:1fr;} }
+
+  .bottleneck-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
+  .bottleneck-list li{
+    font-size:13px; color:var(--ink-secondary); line-height:1.5; padding-left:16px; position:relative;
+  }
+  .bottleneck-list li::before{
+    content:''; position:absolute; left:0; top:7px; width:6px; height:6px; border-radius:50%; background:var(--serious);
+  }
+
+  .rationale-box{
+    margin-top:22px; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:8px;
+  }
+  .rationale-box p{margin:0; font-size:13.5px; line-height:1.55; color:var(--ink);}
+  .rationale-box .head{display:flex; align-items:center; gap:10px;}
+  .rationale-box .head .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--ink-muted);}
+  .rb-invest{background:var(--good-soft);} .rb-hold{background:var(--neutral-status-soft);}
+  .rb-watch{background:var(--warning-soft);} .rb-restructure{background:var(--serious-soft);}
+  .rb-exit{background:var(--critical-soft);}
+
+  /* ---------- table ---------- */
+  .table-section h2{font-size:18px; margin-bottom:4px;}
+  .table-section .sub{font-size:12.5px; color:var(--ink-muted); margin-bottom:14px;}
+  .table-wrap{
+    overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface);
+    box-shadow:var(--shadow);
+  }
+  table{border-collapse:collapse; width:100%; min-width:820px; font-size:13px;}
+  thead th{
+    text-align:left; padding:12px 14px; font-size:11px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--ink-muted); font-weight:700; border-bottom:1px solid var(--border); cursor:pointer;
+    white-space:nowrap; user-select:none;
+  }
+  thead th:hover{color:var(--ink);}
+  thead th .arrow{opacity:0; margin-left:4px; font-size:9px;}
+  thead th.sorted .arrow{opacity:1; color:var(--accent);}
+  tbody td{padding:11px 14px; border-bottom:1px solid var(--border); vertical-align:middle; white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr{cursor:pointer;}
+  tbody tr:hover td{background:var(--surface-2);}
+  td.num{font-family:'IBM Plex Mono'; font-variant-numeric:tabular-nums;}
+  td.name{font-weight:600; font-family:'IBM Plex Sans';}
+  td.name .sec{display:block; font-size:11px; font-weight:500; color:var(--ink-muted); margin-top:1px;}
+
+  footer{margin-top:40px; padding-top:18px; border-top:1px solid var(--border); font-size:11.5px; color:var(--ink-muted);}
+
+  @media (prefers-reduced-motion:reduce){ *{transition:none !important;} }
+</style>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">F</div>
+      <div>
+        <h1>Farol do Portfólio</h1>
+        <span class="tag">Onde investir mais, onde manter, onde sair</span>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <span class="proto">● protótipo · dados ilustrativos</span><br>
+      10 empresas · atualizado em 28/08/2026
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <section class="controls">
+    <div class="chips" id="chips"></div>
+    <div class="sort-row">
+      <label for="sortSel">Ordenar por</label>
+      <select id="sortSel">
+        <option value="risk">Prioridade de atenção</option>
+        <option value="growth">Crescimento de MRR</option>
+        <option value="ratio">LTV/CAC</option>
+        <option value="runway">Runway</option>
+        <option value="name">Nome</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="grid" id="grid"></section>
+
+  <section class="detail" id="detail" hidden></section>
+
+  <section class="table-section">
+    <h2>Comparativo completo</h2>
+    <div class="sub">Clique numa linha para abrir o detalhe · clique num cabeçalho para ordenar</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr id="theadRow"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Farol do Portfólio — protótipo com dados fictícios para validar o formato com o sócio-investidor.
+    Em produção, MRR / CAC / LTV / churn viriam do financeiro e dos boletos de cada empresa investida.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- helpers ---------------- */
+  function fmtBRL(v){
+    var sign = v < 0 ? '-' : '';
+    v = Math.abs(v);
+    if (v >= 1e6) return sign + 'R$ ' + (v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1}) + ' mi';
+    if (v >= 1e3) return sign + 'R$ ' + (v/1e3).toLocaleString('pt-BR',{maximumFractionDigits:1}) + ' mil';
+    return sign + 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+  }
+  function fmtBRLFull(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
+  function fmtPct(v,d){ d = d===undefined?1:d; return v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}) + '%'; }
+  function fmtRatio(v){ return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + 'x'; }
+  function fmtMonths(v){ return v + (v===1?' mês':' meses'); }
+  function niceCeil(v){
+    if (v<=0) return 1;
+    var mag = Math.pow(10, Math.floor(Math.log10(v)));
+    var norm = v/mag, nice;
+    if (norm<=1) nice=1; else if (norm<=2) nice=2; else if (norm<=5) nice=5; else nice=10;
+    return nice*mag;
+  }
+  function noise(seed){ var x = Math.sin(seed)*10000; return x - Math.floor(x); }
+  function genSeries(base, growthPct, months, seed, vol){
+    var arr = [], v = base;
+    for (var i=0;i<months;i++){
+      if (i>0) v = v*(1+growthPct/100);
+      var n = (noise(seed*97 + i*13.7) - 0.5) * 2 * vol;
+      arr.push(Math.max(1, v*(1+n)));
+    }
+    return arr.map(function(x){ return Math.round(x); });
+  }
+
+  var MONTHS = ['set/25','out/25','nov/25','dez/25','jan/26','fev/26','mar/26','abr/26','mai/26','jun/26','jul/26','ago/26'];
+
+  var STATUS = {
+    invest:      {label:'Investir mais', order:0},
+    hold:        {label:'Manter',        order:1},
+    watch:       {label:'Observar',      order:2},
+    restructure: {label:'Reestruturar',  order:3},
+    exit:        {label:'Sair',          order:4}
+  };
+
+  /* ---------------- data ---------------- */
+  var RAW = [
+    {id:'nortek', name:'Nortek Cloud', sector:'SaaS B2B · gestão de frotas',
+     mrr:[180000,8.5,3], cac:[1200,1,7], ltv:[7200,1.5,11],
+     churn:1.8, churnPrev:2.3, runway:18, invested:900000, equity:12, valuation:9200000, investedDate:'mar/2024',
+     customerCount:340, grossMargin:82, cashBalance:1050000, nrr:118,
+     status:'invest',
+     bottlenecks:[
+       'Time de vendas não escala no mesmo ritmo do produto — contratação de SDRs é o gargalo para manter o ritmo de crescimento.',
+       'Payback de CAC em torno de 5 meses é ótimo, mas o time de CS já está no limite para sustentar um NRR acima de 115%.'],
+     rationale:'Crescimento consistente, CAC sob controle e a melhor relação LTV/CAC do portfólio. Aporte adicional financia mais SDRs sem pressionar a margem.'},
+    {id:'casapronta', name:'CasaPronta', sector:'Proptech · gestão de aluguel',
+     mrr:[95000,6,6], cac:[900,0.5,14], ltv:[4300,1,22],
+     churn:2.1, churnPrev:2.6, runway:22, invested:500000, equity:15, valuation:4100000, investedDate:'jun/2024',
+     customerCount:1900, grossMargin:70, cashBalance:780000, nrr:112,
+     status:'invest',
+     bottlenecks:[
+       'Onboarding manual de novos imóveis trava a ativação — falta automação de cadastro via API das imobiliárias parceiras.',
+       'Margem bruta pressionada por suporte humano em disputas de contrato — pouco escalável no modelo atual.'],
+     rationale:'Retenção alta e expansão saudável dentro da base atual. Resolver o gargalo operacional destrava a próxima fase de crescimento.'},
+    {id:'vivara', name:'Vivara Saúde', sector:'Healthtech · telemedicina',
+     mrr:[210000,3.2,9], cac:[1450,2,21], ltv:[4650,0.3,33],
+     churn:3.4, churnPrev:3.1, runway:14, invested:1200000, equity:9, valuation:7800000, investedDate:'jan/2023',
+     customerCount:5200, grossMargin:58, cashBalance:980000, nrr:101,
+     status:'hold',
+     bottlenecks:[
+       'Receita concentrada em poucos parceiros de convênio — risco se algum contrato não renovar.',
+       'Margem bruta de 58% é baixa para um SaaS por causa do custo de rede médica — difícil melhorar sem meter mais tecnologia entre paciente e médico.'],
+     rationale:'Operação estável e perto do equilíbrio, sem alavanca clara de crescimento acelerado. Manter a posição e cobrar plano de diversificação de receita.'},
+    {id:'estuda', name:'Estuda+', sector:'Edtech · preparatório para vestibular',
+     mrr:[68000,2.5,12], cac:[310,1.2,28], ltv:[880,-0.2,44],
+     churn:5.6, churnPrev:5.2, runway:11, invested:350000, equity:18, valuation:1900000, investedDate:'set/2024',
+     customerCount:3400, grossMargin:75, cashBalance:320000, nrr:96,
+     status:'hold',
+     bottlenecks:[
+       'Receita concentrada nos meses de vestibular deixa o caixa apertado no resto do ano.',
+       'NRR abaixo de 100% mostra que a base não compra mais ao longo do ano — falta um produto de manutenção fora de temporada.'],
+     rationale:'Unit economics saudável, mas a sazonalidade exige colchão de caixa maior. Manter e acompanhar o plano de receita recorrente fora de temporada.'},
+    {id:'fibraverde', name:'Fibra Verde', sector:'D2C · moda sustentável',
+     mrr:[54000,1.8,15], cac:[260,2.5,35], ltv:[620,-0.5,55],
+     churn:6.2, churnPrev:5.0, runway:9, invested:260000, equity:20, valuation:1100000, investedDate:'ago/2023',
+     customerCount:2600, grossMargin:42, cashBalance:190000, nrr:92,
+     status:'hold',
+     bottlenecks:[
+       'CAC em alta por saturação dos criativos no Meta Ads — falta diversificar canais de aquisição.',
+       'Margem bruta de 42% deixa pouca gordura para financiar mídia paga mais cara.'],
+     rationale:'Ainda dentro da faixa saudável, mas a piora recente do CAC pede atenção já na próxima revisão trimestral.'},
+    {id:'colheita', name:'Colheita Certa', sector:'Agtech · crédito agrícola',
+     mrr:[130000,4,18], cac:[2100,5,42], ltv:[9800,0.5,66],
+     churn:2.8, churnPrev:2.5, runway:7, invested:800000, equity:14, valuation:5200000, investedDate:'fev/2024',
+     customerCount:210, grossMargin:65, cashBalance:420000, nrr:108,
+     status:'watch',
+     bottlenecks:[
+       'Expansão para novas regiões elevou o custo de aquisição mais rápido do que o funil de qualificação conseguiu acompanhar.',
+       'Caixa para 7 meses não dá tempo para o CAC voltar a cair no ritmo orgânico atual.'],
+     rationale:'A melhor relação LTV/CAC do portfólio, mas o runway curto para o ritmo de queima atual pede cautela: só investir mais após o CAC estabilizar ou com uma nova rodada garantida.'},
+    {id:'pagafacil', name:'PagaFácil', sector:'Fintech · meios de pagamento PME',
+     mrr:[240000,3.5,21], cac:[980,4.5,49], ltv:[2050,-1,77],
+     churn:4.8, churnPrev:3.5, runway:8, invested:1500000, equity:11, valuation:6300000, investedDate:'out/2022',
+     customerCount:6200, grossMargin:55, cashBalance:640000, nrr:90,
+     status:'watch',
+     bottlenecks:[
+       'Renegociação de comissão com os parceiros de maquininha encareceu o principal canal de aquisição.',
+       'NRR de 90% indica contração na base — clientes reduzindo volume transacionado, não só cancelando.'],
+     rationale:'A relação LTV/CAC vem piorando de forma consistente. Segurar novo aporte até haver sinal claro de correção no custo de aquisição.'},
+    {id:'rotaativa', name:'Rota Ativa', sector:'Logtech · roteirização de última milha',
+     mrr:[88000,-0.5,24], cac:[740,3,56], ltv:[1180,-1.5,88],
+     churn:7.4, churnPrev:5.8, runway:6, invested:600000, equity:22, valuation:1400000, investedDate:'mai/2023',
+     customerCount:145, grossMargin:38, cashBalance:210000, nrr:78,
+     status:'restructure',
+     bottlenecks:[
+       'Churn elevado — clientes saem após poucos meses por falta de integração com os ERPs que já usam no dia a dia.',
+       'Margem bruta de 38% some rápido com o CAC subindo — cada cliente novo demora mais para pagar a própria aquisição.'],
+     rationale:'MRR estagnado, CAC subindo e churn alto ao mesmo tempo. Exigir um plano de reestruturação focado em integração antes de qualquer novo aporte.'},
+    {id:'bazarlocal', name:'Bazar Local', sector:'Marketplace · artesanato regional',
+     mrr:[42000,-2.8,27], cac:[410,3.5,63], ltv:[340,-2,99],
+     churn:9.1, churnPrev:7.0, runway:4, invested:400000, equity:25, valuation:300000, investedDate:'jul/2022',
+     customerCount:5100, grossMargin:30, cashBalance:68000, nrr:71,
+     status:'exit',
+     bottlenecks:[
+       'LTV abaixo do CAC — cada cliente novo dá prejuízo, e a oferta não tem diferenciação frente a marketplaces maiores.',
+       'Caixa para 4 meses não sobrevive a um novo ciclo de captação nesse ritmo de queima.'],
+     rationale:'Unit economics negativa e caixa curto. Sem sinal de correção estrutural, o caminho recomendado é negociar a saída antes que o caixa se esgote.'},
+    {id:'pratocerto', name:'Prato Certo', sector:'Foodtech · assinatura de refeições',
+     mrr:[76000,-3.5,30], cac:[520,2,70], ltv:[610,-3,110],
+     churn:11.5, churnPrev:8.9, runway:3, invested:550000, equity:19, valuation:250000, investedDate:'nov/2022',
+     customerCount:2800, grossMargin:22, cashBalance:54000, nrr:68,
+     status:'exit',
+     bottlenecks:[
+       'Qualidade de entrega inconsistente gera cancelamento já no segundo ciclo de assinatura.',
+       'Margem bruta de 22% mal cobre o CAC mesmo sem churn — o modelo de unidade não fecha na estrutura atual de entrega.'],
+     rationale:'MRR em queda com churn de dois dígitos e runway curto — não há tempo para reverter o quadro operando como está. Recomenda-se iniciar o processo de saída.'}
+  ];
+
+  var companies = RAW.map(function(c){
+    var mrr = genSeries(c.mrr[0], c.mrr[1], 12, c.mrr[2], 0.02);
+    var cac = genSeries(c.cac[0], c.cac[1], 12, c.cac[2], 0.03);
+    var ltv = genSeries(c.ltv[0], c.ltv[1], 12, c.ltv[2], 0.02);
+    var ratio = ltv.map(function(l,i){ return l/cac[i]; });
+    var mrrNow = mrr[11];
+    var arpu = mrrNow / c.customerCount;
+    return {
+      id:c.id, name:c.name, sector:c.sector, status:c.status,
+      mrr:mrr, cac:cac, ltv:ltv, ratio:ratio,
+      mrrNow:mrrNow, mrrGrowth:(mrr[11]-mrr[10])/mrr[10]*100,
+      cacNow:cac[11], ltvNow:ltv[11], ratioNow:ratio[11],
+      churn:c.churn, churnPrev:c.churnPrev,
+      runway:c.runway, invested:c.invested, equity:c.equity, valuation:c.valuation, investedDate:c.investedDate,
+      bottlenecks:c.bottlenecks, rationale:c.rationale,
+      customerCount:c.customerCount, grossMargin:c.grossMargin, cashBalance:c.cashBalance, nrr:c.nrr,
+      arr:mrrNow*12,
+      arpu:arpu,
+      burnMonthly:c.cashBalance / c.runway,
+      cacPaybackMonths:cac[11] / (arpu * (c.grossMargin/100))
+    };
+  });
+
+  function riskScore(c){
+    // higher = more attention needed, used for default sort
+    return STATUS[c.status].order * 100 - c.runway + (c.churn - c.churnPrev);
+  }
+
+  /* ---------------- chip / dom helpers ---------------- */
+  function statusChip(status){
+    var span = document.createElement('span');
+    span.className = 'chip status-' + status;
+    var dot = document.createElement('span'); dot.className='dot';
+    span.appendChild(dot);
+    span.appendChild(document.createTextNode(STATUS[status].label));
+    return span;
+  }
+  function el(tag, cls, text){
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  /* ---------------- KPI row ---------------- */
+  function renderKpis(){
+    var wrap = document.getElementById('kpis');
+    wrap.innerHTML = '';
+    var totalInvested = companies.reduce(function(s,c){ return s+c.invested; },0);
+    var totalValuation = companies.reduce(function(s,c){ return s+c.valuation; },0);
+    var moic = totalValuation/totalInvested;
+    var weightedRatio = companies.reduce(function(s,c){ return s+c.ratioNow*c.mrrNow; },0) /
+                         companies.reduce(function(s,c){ return s+c.mrrNow; },0);
+    var alertCount = companies.filter(function(c){ return c.status==='watch'||c.status==='restructure'||c.status==='exit'; }).length;
+
+    var items = [
+      {label:'Capital investido', value:fmtBRL(totalInvested)},
+      {label:'Valuation atual do portfólio', value:fmtBRL(totalValuation)},
+      {label:'Retorno do portfólio (MOIC)', value:fmtRatio(moic)},
+      {label:'LTV/CAC médio ponderado', value:fmtRatio(weightedRatio)},
+      {label:'Empresas em alerta', value:String(alertCount) , sub:'de 10 · observar, reestruturar ou sair', alert:alertCount>0}
+    ];
+    items.forEach(function(it){
+      var k = el('div','kpi'+(it.alert?' alert':''));
+      k.appendChild(el('div','label',it.label));
+      var v = el('div','value', it.value);
+      k.appendChild(v);
+      if (it.sub) k.appendChild(el('div','delta', it.sub));
+      wrap.appendChild(k);
+    });
+  }
+
+  /* ---------------- filter chips ---------------- */
+  var activeFilter = 'all';
+  function renderChips(){
+    var wrap = document.getElementById('chips');
+    wrap.innerHTML = '';
+    var counts = {all:companies.length};
+    Object.keys(STATUS).forEach(function(s){ counts[s]=0; });
+    companies.forEach(function(c){ counts[c.status]++; });
+
+    var defs = [{key:'all', label:'Todas'}].concat(Object.keys(STATUS).map(function(s){
+      return {key:s, label:STATUS[s].label};
+    }));
+    defs.forEach(function(d){
+      var b = el('button','filter-chip'+(activeFilter===d.key?' active':''));
+      b.type = 'button';
+      b.appendChild(document.createTextNode(d.label + ' '));
+      b.appendChild(el('span','n', String(counts[d.key])));
+      b.addEventListener('click', function(){ activeFilter = d.key; renderChips(); renderGrid(); });
+      wrap.appendChild(b);
+    });
+  }
+
+  /* ---------------- sparkline ---------------- */
+  function sparkline(svg, values, colorVar){
+    var W=280,H=46,pad=4;
+    var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
+    if (min===max) max = min+1;
+    var pts = values.map(function(v,i){
+      var x = pad + (i/(values.length-1))*(W-pad*2);
+      var y = pad + (1-(v-min)/(max-min))*(H-pad*2);
+      return [x,y];
+    });
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    svg.innerHTML = '';
+    var areaD = 'M'+pts[0][0]+','+(H-pad)+' ' + pts.map(function(p){return 'L'+p[0]+','+p[1];}).join(' ') + ' L'+pts[pts.length-1][0]+','+(H-pad)+' Z';
+    var lineD = 'M'+pts.map(function(p){return p[0]+','+p[1];}).join(' L');
+    var area = document.createElementNS('http://www.w3.org/2000/svg','path');
+    area.setAttribute('d',areaD); area.setAttribute('style','fill:'+colorVar+';opacity:.12;');
+    svg.appendChild(area);
+    var line = document.createElementNS('http://www.w3.org/2000/svg','path');
+    line.setAttribute('d',lineD); line.setAttribute('fill','none');
+    line.setAttribute('style','stroke:'+colorVar+';stroke-width:2;stroke-linejoin:round;stroke-linecap:round;');
+    svg.appendChild(line);
+    var last = pts[pts.length-1];
+    var ring = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    ring.setAttribute('cx',last[0]); ring.setAttribute('cy',last[1]); ring.setAttribute('r',5);
+    ring.setAttribute('style','fill:var(--surface);'); svg.appendChild(ring);
+    var dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx',last[0]); dot.setAttribute('cy',last[1]); dot.setAttribute('r',3.2);
+    dot.setAttribute('style','fill:'+colorVar+';'); svg.appendChild(dot);
+  }
+  function statusColorVar(status){
+    return { invest:'var(--good)', hold:'var(--neutral-status)', watch:'var(--warning)',
+             restructure:'var(--serious)', exit:'var(--critical)' }[status];
+  }
+
+  /* ---------------- grid of cards ---------------- */
+  var sortKey = 'risk';
+  function sortedCompanies(list){
+    var arr = list.slice();
+    arr.sort(function(a,b){
+      if (sortKey==='risk') return riskScore(b)-riskScore(a);
+      if (sortKey==='growth') return b.mrrGrowth-a.mrrGrowth;
+      if (sortKey==='ratio') return b.ratioNow-a.ratioNow;
+      if (sortKey==='runway') return a.runway-b.runway;
+      if (sortKey==='name') return a.name.localeCompare(b.name,'pt-BR');
+      return 0;
+    });
+    return arr;
+  }
+
+  var openId = null;
+
+  function renderGrid(){
+    var wrap = document.getElementById('grid');
+    wrap.innerHTML = '';
+    var list = companies.filter(function(c){ return activeFilter==='all' || c.status===activeFilter; });
+    sortedCompanies(list).forEach(function(c){
+      var card = el('div','card'+(openId===c.id?' is-open':''));
+      card.tabIndex = 0; card.setAttribute('role','button');
+      card.setAttribute('aria-label','Ver detalhes de '+c.name);
+
+      var head = el('div','card-head');
+      var titleWrap = el('div');
+      titleWrap.appendChild(el('h3',null,c.name));
+      titleWrap.appendChild(el('div','tag-sector',c.sector));
+      head.appendChild(titleWrap);
+      head.appendChild(statusChip(c.status));
+      card.appendChild(head);
+
+      var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('class','card-spark');
+      card.appendChild(svg);
+      sparkline(svg, c.mrr, statusColorVar(c.status));
+
+      var metrics = el('div','card-metrics');
+      [
+        ['CAC', fmtBRL(c.cacNow)],
+        ['LTV', fmtBRL(c.ltvNow)],
+        ['LTV/CAC', fmtRatio(c.ratioNow)],
+        ['Churn', fmtPct(c.churn)]
+      ].forEach(function(m){
+        var mm = el('div','m');
+        mm.appendChild(el('div','l',m[0]));
+        mm.appendChild(el('div','v',m[1]));
+        metrics.appendChild(mm);
+      });
+      card.appendChild(metrics);
+
+      var bn = el('div','card-bottleneck');
+      bn.appendChild(el('b',null,'Gargalo'));
+      bn.appendChild(document.createTextNode(c.bottlenecks[0]));
+      card.appendChild(bn);
+
+      card.addEventListener('click', function(){ openDetail(c.id); });
+      card.addEventListener('keydown', function(e){
+        if (e.key==='Enter' || e.key===' '){ e.preventDefault(); openDetail(c.id); }
+      });
+      wrap.appendChild(card);
+    });
+  }
+
+  /* ---------------- interactive line chart ---------------- */
+  function mountChart(container, seriesList, opts){
+    opts = opts || {};
+    var W=680,H=230,padL=48,padR=14,padT=16,padB=26;
+    var plotW=W-padL-padR, plotH=H-padT-padB;
+    container.innerHTML = '';
+    var svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    container.appendChild(svg);
+    var tip = el('div','chart-tip');
+    container.appendChild(tip);
+
+    var allVals = [];
+    seriesList.forEach(function(s){ allVals = allVals.concat(s.values); });
+    var maxV = niceCeil(Math.max.apply(null, allVals));
+    var n = MONTHS.length;
+    function X(i){ return padL + (i/(n-1))*plotW; }
+    function Y(v){ return padT + plotH - (v/maxV)*plotH; }
+
+    function svgNode(tag, attrs){
+      var e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      return e;
+    }
+
+    // gridlines
+    [0,0.5,1].forEach(function(f){
+      var v = maxV*f, yy = Y(v);
+      svg.appendChild(svgNode('line',{x1:padL,x2:W-padR,y1:yy,y2:yy,style:'stroke:var('+(f===0?'--baseline':'--grid')+');stroke-width:1;'}));
+      var t = svgNode('text',{x:padL-8,y:yy+3,'text-anchor':'end',style:'font:10px "IBM Plex Mono";fill:var(--ink-muted);'});
+      t.textContent = opts.valueFmt ? opts.valueFmt(v) : fmtBRL(v);
+      svg.appendChild(t);
+    });
+
+    // month labels
+    for (var i=0;i<n;i+=2){
+      var t2 = svgNode('text',{x:X(i),y:H-6,'text-anchor':'middle',style:'font:10px "IBM Plex Mono";fill:var(--ink-muted);'});
+      t2.textContent = MONTHS[i];
+      svg.appendChild(t2);
+    }
+
+    seriesList.forEach(function(s, si){
+      var pts = s.values.map(function(v,i){ return [X(i),Y(v)]; });
+      if (s.area){
+        var aD = 'M'+pts[0][0]+','+Y(0)+' '+pts.map(function(p){return 'L'+p[0]+','+p[1];}).join(' ')+' L'+pts[pts.length-1][0]+','+Y(0)+' Z';
+        svg.appendChild(svgNode('path',{d:aD, style:'fill:'+s.color+';opacity:.1;stroke:none;'}));
+      }
+      var lD = 'M'+pts.map(function(p){return p[0]+','+p[1];}).join(' L');
+      svg.appendChild(svgNode('path',{d:lD, style:'fill:none;stroke:'+s.color+';stroke-width:2;stroke-linejoin:round;stroke-linecap:round;'}));
+      var last = pts[pts.length-1];
+      svg.appendChild(svgNode('circle',{cx:last[0],cy:last[1],r:6,style:'fill:var(--surface);'}));
+      svg.appendChild(svgNode('circle',{cx:last[0],cy:last[1],r:4,style:'fill:'+s.color+';'}));
+      var lbl = svgNode('text',{
+        x:last[0], y: last[1] - 10 - (si*13),
+        'text-anchor':'end', style:'font:600 11px "IBM Plex Mono";fill:var(--ink-secondary);'
+      });
+      lbl.textContent = opts.valueFmt ? opts.valueFmt(s.values[s.values.length-1]) : fmtBRL(s.values[s.values.length-1]);
+      svg.appendChild(lbl);
+    });
+
+    // crosshair
+    var chGroup = svgNode('g',{style:'opacity:0;'});
+    var chLine = svgNode('line',{y1:padT,y2:H-padB,style:'stroke:var(--ink-muted);stroke-width:1;stroke-dasharray:2,2;'});
+    chGroup.appendChild(chLine);
+    var chDots = seriesList.map(function(s){
+      var g = svgNode('g');
+      var ring = svgNode('circle',{r:5,style:'fill:var(--surface);'});
+      var dot = svgNode('circle',{r:3.2,style:'fill:'+s.color+';'});
+      g.appendChild(ring); g.appendChild(dot);
+      chGroup.appendChild(g);
+      return {g:g,ring:ring,dot:dot,series:s};
+    });
+    svg.appendChild(chGroup);
+
+    var overlay = svgNode('rect',{x:padL,y:padT,width:plotW,height:plotH,style:'fill:transparent;'});
+    svg.appendChild(overlay);
+
+    function showAt(idx, clientX, clientY){
+      chGroup.setAttribute('style','opacity:1;');
+      var xx = X(idx);
+      chLine.setAttribute('x1',xx); chLine.setAttribute('x2',xx);
+      chDots.forEach(function(cd){
+        var yy = Y(cd.series.values[idx]);
+        cd.g.setAttribute('transform','translate('+xx+','+yy+')');
+      });
+      var rect = container.getBoundingClientRect();
+      var scale = rect.width / W;
+      var topValue = Math.max.apply(null, chDots.map(function(cd){ return cd.series.values[idx]; }));
+      tip.style.left = (xx*scale) + 'px';
+      tip.style.top = (Y(topValue)*scale) + 'px';
+      tip.innerHTML = '';
+      var td = el('div','t-date', MONTHS[idx]);
+      tip.appendChild(td);
+      chDots.forEach(function(cd){
+        var row = el('div','t-row');
+        var k = el('span','k'); k.style.background = cd.series.color;
+        row.appendChild(k);
+        row.appendChild(document.createTextNode(cd.series.label));
+        var val = el('span','val', opts.valueFmt ? opts.valueFmt(cd.series.values[idx]) : fmtBRL(cd.series.values[idx]));
+        row.appendChild(val);
+        tip.appendChild(row);
+      });
+      tip.classList.add('show');
+    }
+    function hide(){ chGroup.setAttribute('style','opacity:0;'); tip.classList.remove('show'); }
+
+    overlay.addEventListener('mousemove', function(e){
+      var rect = svg.getBoundingClientRect();
+      var scale = W / rect.width;
+      var svgX = (e.clientX - rect.left) * scale;
+      var idx = Math.round(((svgX - padL) / plotW) * (n-1));
+      idx = Math.max(0, Math.min(n-1, idx));
+      showAt(idx);
+    });
+    overlay.addEventListener('mouseleave', hide);
+  }
+
+  /* ---------------- detail panel ---------------- */
+  function openDetail(id, opts){
+    opts = opts || {};
+    openId = id;
+    renderGrid();
+    var c = companies.filter(function(x){ return x.id===id; })[0];
+    if (!c) return;
+    var d = document.getElementById('detail');
+    d.hidden = false;
+    d.innerHTML = '';
+
+    if (!opts.skipHash) history.pushState(null, '', '#'+id);
+
+    var top = el('div','detail-top');
+    var titleCol = el('div');
+    var titleRow = el('div','detail-title');
+    titleRow.appendChild(el('h2',null,c.name));
+    titleRow.appendChild(statusChip(c.status));
+    titleCol.appendChild(titleRow);
+    var sub = el('div','detail-sub');
+    sub.innerHTML = c.sector + ' &nbsp;·&nbsp; aporte <span>'+fmtBRL(c.invested)+'</span> em '+c.investedDate+
+      ' &nbsp;·&nbsp; <span>'+c.equity+'%</span> de equity &nbsp;·&nbsp; valuation atual <span>'+fmtBRL(c.valuation)+'</span>';
+    titleCol.appendChild(sub);
+    top.appendChild(titleCol);
+    var closeBtn = el('button','close-btn','×');
+    closeBtn.setAttribute('aria-label','Fechar detalhe');
+    closeBtn.addEventListener('click', function(){
+      d.hidden = true; openId = null; renderGrid();
+      history.pushState(null, '', location.pathname + location.search);
+    });
+    top.appendChild(closeBtn);
+    d.appendChild(top);
+
+    d.appendChild(el('div','group-label','Crescimento & aquisição'));
+    var kpis = el('div','detail-kpis');
+    var churnDelta = c.churn - c.churnPrev;
+    [
+      {l:'MRR atual', v:fmtBRL(c.mrrNow), d:(c.mrrGrowth>=0?'+':'')+fmtPct(c.mrrGrowth)+' vs. mês anterior', up:c.mrrGrowth>=0},
+      {l:'CAC', v:fmtBRL(c.cacNow)},
+      {l:'LTV', v:fmtBRL(c.ltvNow)},
+      {l:'LTV/CAC', v:fmtRatio(c.ratioNow)},
+      {l:'Churn mensal', v:fmtPct(c.churn), d:(churnDelta>=0?'+':'')+fmtPct(churnDelta)+' vs. 6 meses atrás', up:churnDelta<0},
+      {l:'Runway', v:fmtMonths(c.runway)}
+    ].forEach(function(k){
+      var kk = el('div','k');
+      kk.appendChild(el('div','l',k.l));
+      kk.appendChild(el('div','v',k.v));
+      if (k.d) kk.appendChild(el('div','d '+(k.up?'up':'down'), k.d));
+      kpis.appendChild(kk);
+    });
+    d.appendChild(kpis);
+
+    d.appendChild(el('div','group-label','Financeiro & caixa'));
+    var kpis2 = el('div','detail-kpis');
+    [
+      {l:'ARR (receita anualizada)', v:fmtBRL(c.arr)},
+      {l:'Margem bruta', v:fmtPct(c.grossMargin,0)},
+      {l:'Clientes ativos', v:c.customerCount.toLocaleString('pt-BR')},
+      {l:'Ticket médio (ARPU)', v:fmtBRLFull(c.arpu)+'/mês'},
+      {l:'Payback de CAC', v:fmtMonths(Math.round(c.cacPaybackMonths))},
+      {l:'NRR (retenção de receita)', v:fmtPct(c.nrr,0), d: c.nrr>=100 ? 'expansão líquida' : 'contração líquida', up:c.nrr>=100},
+      {l:'Caixa em caixa', v:fmtBRL(c.cashBalance)},
+      {l:'Queima mensal', v:fmtBRL(c.burnMonthly)}
+    ].forEach(function(k){
+      var kk = el('div','k');
+      kk.appendChild(el('div','l',k.l));
+      kk.appendChild(el('div','v',k.v));
+      if (k.d) kk.appendChild(el('div','d '+(k.up?'up':'down'), k.d));
+      kpis2.appendChild(kk);
+    });
+    d.appendChild(kpis2);
+
+    var twoCol = el('div','two-col');
+
+    var c1 = el('div','chart-block');
+    c1.appendChild(el('h4','','Evolução de MRR — 12 meses'));
+    c1.appendChild(el('div','sub','Receita recorrente mensal'));
+    var cw1 = el('div','chart-wrap');
+    c1.appendChild(cw1);
+    twoCol.appendChild(c1);
+
+    var c2 = el('div','chart-block');
+    c2.appendChild(el('h4','','CAC vs. LTV — 12 meses'));
+    c2.appendChild(el('div','sub','Custo de aquisição e valor do cliente ao longo do tempo'));
+    var legend = el('div','legend-row');
+    [['CAC','var(--series-2)'],['LTV','var(--accent)']].forEach(function(s){
+      var it = el('div','item');
+      var k = el('span','k'); k.style.background = s[1];
+      it.appendChild(k); it.appendChild(document.createTextNode(s[0]));
+      legend.appendChild(it);
+    });
+    c2.appendChild(legend);
+    var cw2 = el('div','chart-wrap');
+    c2.appendChild(cw2);
+    twoCol.appendChild(c2);
+
+    d.appendChild(twoCol);
+
+    var bnBlock = el('div','chart-block');
+    bnBlock.appendChild(el('h4',null,'Gargalos identificados'));
+    var ul = el('ul','bottleneck-list');
+    c.bottlenecks.forEach(function(b){ ul.appendChild(el('li',null,b)); });
+    bnBlock.appendChild(ul);
+    d.appendChild(bnBlock);
+
+    var monthBlock = el('div','chart-block');
+    monthBlock.appendChild(el('h4',null,'Detalhamento mês a mês'));
+    monthBlock.appendChild(el('div','sub','MRR, CAC, LTV e a relação entre eles nos últimos 12 meses'));
+    var mTableWrap = el('div','table-wrap detail-table-wrap');
+    var mTable = el('table');
+    var mThead = el('thead');
+    var mTr = el('tr');
+    ['Mês','MRR','CAC','LTV','LTV/CAC'].forEach(function(h){ mTr.appendChild(el('th',null,h)); });
+    mThead.appendChild(mTr);
+    mTable.appendChild(mThead);
+    var mBody = el('tbody');
+    for (var i=0;i<MONTHS.length;i++){
+      var row = el('tr');
+      row.appendChild(el('td','name',MONTHS[i]));
+      row.appendChild(el('td','num',fmtBRLFull(c.mrr[i])));
+      row.appendChild(el('td','num',fmtBRLFull(c.cac[i])));
+      row.appendChild(el('td','num',fmtBRLFull(c.ltv[i])));
+      row.appendChild(el('td','num',fmtRatio(c.ratio[i])));
+      mBody.appendChild(row);
+    }
+    mTable.appendChild(mBody);
+    mTableWrap.appendChild(mTable);
+    monthBlock.appendChild(mTableWrap);
+    d.appendChild(monthBlock);
+
+    var rb = el('div','rationale-box rb-'+c.status);
+    var rhead = el('div','head');
+    rhead.appendChild(statusChip(c.status));
+    rhead.appendChild(el('span','lbl','recomendação'));
+    rb.appendChild(rhead);
+    rb.appendChild(el('p',null,c.rationale));
+    d.appendChild(rb);
+
+    mountChart(cw1, [{label:'MRR', values:c.mrr, color:'var(--accent)', area:true}], {});
+    mountChart(cw2, [
+      {label:'CAC', values:c.cac, color:'var(--series-2)'},
+      {label:'LTV', values:c.ltv, color:'var(--accent)'}
+    ], {});
+
+    if (!opts.skipScroll) d.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  /* ---------------- table ---------------- */
+  var tableSort = {key:'risk', dir:-1};
+  var COLS = [
+    {key:'name', label:'Empresa'},
+    {key:'status', label:'Status'},
+    {key:'mrrNow', label:'MRR atual'},
+    {key:'mrrGrowth', label:'Δ MoM'},
+    {key:'cacNow', label:'CAC'},
+    {key:'ltvNow', label:'LTV'},
+    {key:'ratioNow', label:'LTV/CAC'},
+    {key:'churn', label:'Churn'},
+    {key:'runway', label:'Runway'}
+  ];
+
+  function tableValue(c,key){
+    if (key==='risk') return riskScore(c);
+    return c[key];
+  }
+
+  function renderTable(){
+    var thead = document.getElementById('theadRow');
+    thead.innerHTML = '';
+    COLS.forEach(function(col){
+      var th = el('th', tableSort.key===col.key ? 'sorted' : null);
+      th.appendChild(document.createTextNode(col.label));
+      var arrow = el('span','arrow', tableSort.dir===1 ? '▲' : '▼');
+      th.appendChild(arrow);
+      th.addEventListener('click', function(){
+        if (tableSort.key===col.key) tableSort.dir *= -1;
+        else { tableSort.key = col.key; tableSort.dir = 1; }
+        renderTable();
+      });
+      thead.appendChild(th);
+    });
+
+    var tbody = document.getElementById('tbody');
+    tbody.innerHTML = '';
+    var arr = companies.slice().sort(function(a,b){
+      var av = tableValue(a,tableSort.key), bv = tableValue(b,tableSort.key);
+      if (typeof av === 'string') return av.localeCompare(bv,'pt-BR') * tableSort.dir;
+      return (av-bv) * tableSort.dir;
+    });
+    arr.forEach(function(c){
+      var tr = el('tr');
+      var tdName = el('td','name');
+      tdName.appendChild(document.createTextNode(c.name));
+      tdName.appendChild(el('span','sec',c.sector));
+      tr.appendChild(tdName);
+      var tdStatus = el('td');
+      tdStatus.appendChild(statusChip(c.status));
+      tr.appendChild(tdStatus);
+      [
+        fmtBRL(c.mrrNow),
+        (c.mrrGrowth>=0?'+':'')+fmtPct(c.mrrGrowth),
+        fmtBRL(c.cacNow),
+        fmtBRL(c.ltvNow),
+        fmtRatio(c.ratioNow),
+        fmtPct(c.churn),
+        fmtMonths(c.runway)
+      ].forEach(function(v){ tr.appendChild(el('td','num',v)); });
+      tr.addEventListener('click', function(){ openDetail(c.id); });
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* ---------------- wire up ---------------- */
+  document.getElementById('sortSel').addEventListener('change', function(e){
+    sortKey = e.target.value; renderGrid();
+  });
+
+  window.addEventListener('popstate', function(){
+    var id = location.hash.replace('#','');
+    if (id && companies.some(function(c){ return c.id===id; })){
+      openDetail(id, {skipHash:true, skipScroll:true});
+    } else {
+      document.getElementById('detail').hidden = true; openId = null; renderGrid();
+    }
+  });
+
+  renderKpis();
+  renderChips();
+  renderGrid();
+  renderTable();
+
+  var initialId = location.hash.replace('#','');
+  if (initialId && companies.some(function(c){ return c.id===initialId; })){
+    openDetail(initialId, {skipHash:true});
+  }
+})();
+</script>

@@ -6,7 +6,9 @@ Site estático, sem backend e sem dependências externas além das fontes do Goo
 
 ## Ver o painel
 
-Abra `index.html` direto no navegador, ou publique via GitHub Pages (Settings → Pages → Deploy from branch `main` / `root`).
+**No ar:** https://malneto.github.io/farol-portfolio/
+
+Ou abra `index.html` direto no navegador. O deploy é automático via GitHub Pages a cada push na branch `master`.
 
 ## O que tem
 

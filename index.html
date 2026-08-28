@@ -236,11 +236,6 @@
   .detail-kpis .k .d{font-size:11px; margin-top:3px; font-weight:600;}
   .detail-kpis .k .d.up{color:var(--good);} .detail-kpis .k .d.down{color:var(--critical);}
 
-  .detail-table-wrap{box-shadow:none;}
-  .detail-table-wrap table{min-width:0;}
-  .detail-table-wrap thead th{cursor:default;}
-  .detail-table-wrap thead th:hover{color:var(--ink-muted);}
-
   .chart-block{margin-top:22px;}
   .chart-block h4{font-size:13px; font-weight:600; color:var(--ink-secondary); margin-bottom:2px;}
   .chart-block .sub{font-size:11.5px; color:var(--ink-muted); margin-bottom:10px;}
@@ -272,45 +267,14 @@
     content:''; position:absolute; left:0; top:7px; width:6px; height:6px; border-radius:50%; background:var(--serious);
   }
 
-  .doc-drop{
-    border:1.5px dashed var(--border-strong); border-radius:12px; padding:22px 16px; text-align:center;
-    cursor:pointer; color:var(--ink-muted); font-size:12.5px; transition:border-color .15s, background .15s, color .15s;
+  .audit-link{
+    display:inline-flex; align-items:center; gap:6px; margin-top:16px; padding:9px 15px; border-radius:9px;
+    background:var(--accent); color:var(--accent-ink); font:600 12.5px 'IBM Plex Sans'; text-decoration:none;
+    transition:opacity .15s;
   }
-  .doc-drop:hover, .doc-drop:focus-visible{border-color:var(--accent); color:var(--ink-secondary); background:var(--accent-soft);}
-  .doc-drop svg{display:block; margin:0 auto 8px;}
-  .doc-drop strong{color:var(--ink-secondary); font-weight:600;}
-  .doc-drop .hint{margin-top:2px; font-size:11px;}
-
-  .doc-list{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
-  .doc-card{
-    border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; gap:12px;
-    align-items:flex-start; background:var(--surface-2); animation:doc-in .25s ease;
-  }
-  @keyframes doc-in{ from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;} }
-  .doc-card .icon{
-    flex:none; width:34px; height:34px; border-radius:8px; background:var(--surface); border:1px solid var(--border);
-    display:flex; align-items:center; justify-content:center; color:var(--ink-muted);
-  }
-  .doc-card .body{flex:1; min-width:0;}
-  .doc-card .head{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:2px;}
-  .doc-card .name{font-weight:600; font-size:13px;}
-  .doc-card .meta{font-size:11.5px; color:var(--ink-muted);}
-  .doc-fields{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px;}
-  .doc-fields .f .l{font-size:10px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em;}
-  .doc-fields .f .v{font-family:'IBM Plex Mono'; font-size:12.5px; font-weight:500; margin-top:2px; font-variant-numeric:tabular-nums;}
-  .doc-fields .f .v.bad{color:var(--critical);}
-  .doc-note{
-    margin-top:10px; font-size:12px; color:var(--ink); background:var(--critical-soft); border-radius:8px;
-    padding:8px 10px; line-height:1.45;
-  }
-  .doc-note b{display:block; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--critical); margin-bottom:3px;}
-  .doc-processing{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-muted); margin-top:8px;}
-  .doc-processing .spin{
-    width:12px; height:12px; border-radius:50%; border:2px solid var(--border-strong); border-top-color:var(--accent);
-    animation:doc-spin .7s linear infinite;
-  }
-  @keyframes doc-spin{ to{transform:rotate(360deg);} }
-  @media (prefers-reduced-motion:reduce){ .doc-card{animation:none;} .doc-processing .spin{animation:none;} }
+  .audit-link:hover{opacity:.88;}
+  .audit-link span{transition:transform .15s;}
+  .audit-link:hover span{transform:translateX(2px);}
 
   .rationale-box{
     margin-top:22px; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:8px;
@@ -401,7 +365,7 @@
   <footer>
     Farol do Portfólio — protótipo com dados fictícios para validar o formato com o sócio-investidor.
     Em produção, MRR / CAC / LTV / churn viriam do financeiro e dos boletos de cada empresa investida.
-    Veja também o <a href="arquitetura.html">esboço da camada de dados</a> por baixo deste painel.
+    Nível 2, por empresa: <a href="auditoria.html">Ação & Auditoria</a>. Referência técnica: <a href="arquitetura.html">camada de dados</a>.
   </footer>
 
 </div>
@@ -418,12 +382,9 @@
     if (v >= 1e3) return sign + 'R$ ' + (v/1e3).toLocaleString('pt-BR',{maximumFractionDigits:1}) + ' mil';
     return sign + 'R$ ' + Math.round(v).toLocaleString('pt-BR');
   }
-  function fmtBRLFull(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
-  function fmtSignedBRL(v){ return (v<0?'-':'+') + fmtBRLFull(Math.abs(v)); }
   function fmtPct(v,d){ d = d===undefined?1:d; return v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}) + '%'; }
   function fmtRatio(v){ return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + 'x'; }
   function fmtMonths(v){ return v + (v===1?' mês':' meses'); }
-  function fmtPayback(v){ return v > 36 ? '> 36 meses' : fmtMonths(Math.round(v)); }
   function niceCeil(v){
     if (v<=0) return 1;
     var mag = Math.pow(10, Math.floor(Math.log10(v)));
@@ -443,7 +404,6 @@
   }
 
   var MONTHS = ['set/25','out/25','nov/25','dez/25','jan/26','fev/26','mar/26','abr/26','mai/26','jun/26','jul/26','ago/26'];
-  var DOC_DATE = 'ago/2026';
 
   var STATUS = {
     invest:      {label:'Investir mais', order:0},
@@ -871,134 +831,6 @@
     overlay.addEventListener('mouseleave', hide);
   }
 
-  /* ---------------- documentos & conciliação contábil ---------------- */
-  var DOC_STATUS = {
-    processed:   {chip:'status-hold',   label:'Processado'},
-    matches:     {chip:'status-invest', label:'Bate com o balancete'},
-    mismatch:    {chip:'status-exit',   label:'Divergência encontrada'},
-    processing:  {chip:'status-watch',  label:'Processando…'}
-  };
-  function docChip(key){
-    var m = DOC_STATUS[key];
-    var span = el('span','chip '+m.chip);
-    span.appendChild(el('span','dot'));
-    span.appendChild(document.createTextNode(m.label));
-    return span;
-  }
-  var DOC_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5"/></svg>';
-
-  function baseDocsFor(c){
-    var hasMismatch = !!c.bankNote;
-    return [
-      {
-        key:'balancete', name:'Balancete (DRE) — '+DOC_DATE+'.pdf', type:'Contábil · enviado pela empresa',
-        status:'processed',
-        fields:[
-          ['Receita do mês', fmtBRLFull(c.mrrNow)],
-          ['Resultado do mês (aprox.)', fmtSignedBRL(-c.burnMonthly)],
-          ['Caixa reportado', fmtBRLFull(c.cashBalance)]
-        ],
-        note:null
-      },
-      {
-        key:'extrato', name:'Extrato bancário — '+DOC_DATE+'.pdf', type:'Open Finance · leitura direta do banco',
-        status: hasMismatch ? 'mismatch' : 'matches',
-        fields:[
-          ['Saldo final no banco', fmtBRLFull(c.bankCash)],
-          ['Diferença vs. balancete', fmtSignedBRL(c.bankCash - c.cashBalance)]
-        ],
-        note: c.bankNote
-      }
-    ];
-  }
-
-  function docCardEl(doc){
-    var card = el('div','doc-card');
-    var icon = el('div','icon'); icon.innerHTML = DOC_ICON;
-    card.appendChild(icon);
-    var body = el('div','body');
-    var head = el('div','head');
-    head.appendChild(el('span','name', doc.name));
-    head.appendChild(docChip(doc.status));
-    body.appendChild(head);
-    body.appendChild(el('div','meta', doc.type));
-
-    if (doc.status === 'processing'){
-      var pr = el('div','doc-processing');
-      pr.appendChild(el('span','spin'));
-      pr.appendChild(document.createTextNode('Lendo o documento e extraindo os números…'));
-      body.appendChild(pr);
-    } else {
-      var fields = el('div','doc-fields');
-      doc.fields.forEach(function(f){
-        var ff = el('div','f');
-        ff.appendChild(el('div','l', f[0]));
-        var bad = doc.status === 'mismatch' && f[0].indexOf('Diferença') === 0;
-        ff.appendChild(el('div','v'+(bad?' bad':''), f[1]));
-        fields.appendChild(ff);
-      });
-      body.appendChild(fields);
-      if (doc.note){
-        var note = el('div','doc-note');
-        note.appendChild(el('b',null,'O que a IA encontrou'));
-        note.appendChild(document.createTextNode(doc.note));
-        body.appendChild(note);
-      }
-    }
-    card.appendChild(body);
-    return card;
-  }
-
-  function renderDocs(container, c){
-    container.innerHTML = '';
-
-    var drop = el('div','doc-drop');
-    drop.tabIndex = 0; drop.setAttribute('role','button');
-    drop.innerHTML = DOC_ICON.replace('width="17" height="17"','width="20" height="20"');
-    var strong = el('strong',null,'Enviar novo documento');
-    var hint = el('div','hint','PDF ou foto de balancete, DRE ou extrato — clique para simular o envio e a leitura por IA');
-    drop.appendChild(strong);
-    drop.appendChild(hint);
-    var input = document.createElement('input');
-    input.type = 'file'; input.accept = '.pdf,image/*'; input.style.display = 'none';
-    drop.appendChild(input);
-    drop.addEventListener('click', function(){ input.click(); });
-    drop.addEventListener('keydown', function(e){ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); input.click(); } });
-    container.appendChild(drop);
-
-    var list = el('div','doc-list');
-    container.appendChild(list);
-
-    function paint(){
-      list.innerHTML = '';
-      c.uploadedDocs.concat(baseDocsFor(c)).forEach(function(doc){
-        list.appendChild(docCardEl(doc));
-      });
-    }
-    paint();
-
-    input.addEventListener('change', function(){
-      if (!input.files || !input.files[0]) return;
-      var fname = input.files[0].name;
-      var pending = {
-        key:'upload-'+Date.now(), name:fname, type:'Enviado agora · em processamento',
-        status:'processing', fields:[], note:null
-      };
-      c.uploadedDocs.unshift(pending);
-      paint();
-      setTimeout(function(){
-        pending.status = 'matches';
-        pending.type = 'Conferido contra o Open Finance';
-        pending.fields = [
-          ['Caixa identificado', fmtBRLFull(c.bankCash)],
-          ['Diferença vs. dados atuais', fmtSignedBRL(0)]
-        ];
-        paint();
-      }, 1400);
-      input.value = '';
-    });
-  }
-
   /* ---------------- detail panel ---------------- */
   function openDetail(id, opts){
     opts = opts || {};
@@ -1032,6 +864,11 @@
     top.appendChild(closeBtn);
     d.appendChild(top);
 
+    var auditLink = el('a','audit-link');
+    auditLink.href = 'auditoria.html#' + c.id;
+    auditLink.innerHTML = 'Abrir ação &amp; auditoria desta empresa <span aria-hidden="true">&rarr;</span>';
+    d.appendChild(auditLink);
+
     d.appendChild(el('div','group-label','Crescimento & aquisição'));
     var kpis = el('div','detail-kpis');
     var churnDelta = c.churn - c.churnPrev;
@@ -1050,26 +887,6 @@
       kpis.appendChild(kk);
     });
     d.appendChild(kpis);
-
-    d.appendChild(el('div','group-label','Financeiro & caixa'));
-    var kpis2 = el('div','detail-kpis');
-    [
-      {l:'ARR (receita anualizada)', v:fmtBRL(c.arr)},
-      {l:'Margem bruta', v:fmtPct(c.grossMargin,0)},
-      {l:'Clientes ativos', v:c.customerCount.toLocaleString('pt-BR')},
-      {l:'Ticket médio (ARPU)', v:fmtBRLFull(c.arpu)+'/mês'},
-      {l:'Payback de CAC', v:fmtPayback(c.cacPaybackMonths)},
-      {l:'NRR (retenção de receita)', v:fmtPct(c.nrr,0), d: c.nrr>=100 ? 'expansão líquida' : 'contração líquida', up:c.nrr>=100},
-      {l:'Caixa em caixa', v:fmtBRL(c.cashBalance)},
-      {l:'Queima mensal', v:fmtBRL(c.burnMonthly)}
-    ].forEach(function(k){
-      var kk = el('div','k');
-      kk.appendChild(el('div','l',k.l));
-      kk.appendChild(el('div','v',k.v));
-      if (k.d) kk.appendChild(el('div','d '+(k.up?'up':'down'), k.d));
-      kpis2.appendChild(kk);
-    });
-    d.appendChild(kpis2);
 
     var twoCol = el('div','two-col');
 
@@ -1103,39 +920,6 @@
     c.bottlenecks.forEach(function(b){ ul.appendChild(el('li',null,b)); });
     bnBlock.appendChild(ul);
     d.appendChild(bnBlock);
-
-    var monthBlock = el('div','chart-block');
-    monthBlock.appendChild(el('h4',null,'Detalhamento mês a mês'));
-    monthBlock.appendChild(el('div','sub','MRR, CAC, LTV e a relação entre eles nos últimos 12 meses'));
-    var mTableWrap = el('div','table-wrap detail-table-wrap');
-    var mTable = el('table');
-    var mThead = el('thead');
-    var mTr = el('tr');
-    ['Mês','MRR','CAC','LTV','LTV/CAC'].forEach(function(h){ mTr.appendChild(el('th',null,h)); });
-    mThead.appendChild(mTr);
-    mTable.appendChild(mThead);
-    var mBody = el('tbody');
-    for (var i=0;i<MONTHS.length;i++){
-      var row = el('tr');
-      row.appendChild(el('td','name',MONTHS[i]));
-      row.appendChild(el('td','num',fmtBRLFull(c.mrr[i])));
-      row.appendChild(el('td','num',fmtBRLFull(c.cac[i])));
-      row.appendChild(el('td','num',fmtBRLFull(c.ltv[i])));
-      row.appendChild(el('td','num',fmtRatio(c.ratio[i])));
-      mBody.appendChild(row);
-    }
-    mTable.appendChild(mBody);
-    mTableWrap.appendChild(mTable);
-    monthBlock.appendChild(mTableWrap);
-    d.appendChild(monthBlock);
-
-    var docBlock = el('div','chart-block');
-    docBlock.appendChild(el('h4',null,'Documentos & conciliação contábil'));
-    docBlock.appendChild(el('div','sub','Balancete enviado pela empresa, lido por IA e cruzado contra o extrato bancário via Open Finance'));
-    var docContainer = el('div');
-    docBlock.appendChild(docContainer);
-    d.appendChild(docBlock);
-    renderDocs(docContainer, c);
 
     var rb = el('div','rationale-box rb-'+c.status);
     var rhead = el('div','head');

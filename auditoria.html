@@ -1,0 +1,716 @@
+<title>Ação & Auditoria</title>
+<meta name="description" content="Nível 2 do Farol: dados de ação e auditoria por empresa — financeiro, contas em aberto, documentos conciliados, trilha de auditoria e plano de ação.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    color-scheme: light;
+    --page: #f6f5f0;
+    --surface: #ffffff;
+    --surface-2: #fbfaf5;
+    --ink: #17160f;
+    --ink-secondary: #57544a;
+    --ink-muted: #8b8779;
+    --border: rgba(23,22,15,0.10);
+    --border-strong: rgba(23,22,15,0.20);
+    --accent: #2a78d6;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(42,120,214,0.12);
+    --series-2: #eb6834;
+    --good: #0ca30c;
+    --good-soft: rgba(12,163,12,0.12);
+    --warning: #fab219;
+    --warning-soft: rgba(250,178,25,0.20);
+    --serious: #ec835a;
+    --serious-soft: rgba(236,131,90,0.20);
+    --critical: #d03b3b;
+    --critical-soft: rgba(208,59,59,0.12);
+    --neutral-status: #6b6a63;
+    --neutral-status-soft: rgba(107,106,99,0.12);
+    --shadow: 0 1px 2px rgba(23,22,15,.04), 0 8px 24px -12px rgba(23,22,15,.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --page: #0d0d0c;
+      --surface: #1a1a19;
+      --surface-2: #201f1d;
+      --ink: #ffffff;
+      --ink-secondary: #c3c2b7;
+      --ink-muted: #918f85;
+      --border: rgba(255,255,255,0.10);
+      --border-strong: rgba(255,255,255,0.20);
+      --accent: #3987e5;
+      --accent-ink: #ffffff;
+      --accent-soft: rgba(57,135,229,0.20);
+      --series-2: #d95926;
+      --good: #0ca30c;
+      --good-soft: rgba(12,163,12,0.20);
+      --warning: #fab219;
+      --warning-soft: rgba(250,178,25,0.20);
+      --serious: #ec835a;
+      --serious-soft: rgba(236,131,90,0.20);
+      --critical: #d03b3b;
+      --critical-soft: rgba(208,59,59,0.22);
+      --neutral-status: #a8a69b;
+      --neutral-status-soft: rgba(255,255,255,0.10);
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page: #0d0d0c;
+    --surface: #1a1a19;
+    --surface-2: #201f1d;
+    --ink: #ffffff;
+    --ink-secondary: #c3c2b7;
+    --ink-muted: #918f85;
+    --border: rgba(255,255,255,0.10);
+    --border-strong: rgba(255,255,255,0.20);
+    --accent: #3987e5;
+    --accent-ink: #ffffff;
+    --accent-soft: rgba(57,135,229,0.20);
+    --series-2: #d95926;
+    --good: #0ca30c;
+    --good-soft: rgba(12,163,12,0.20);
+    --warning: #fab219;
+    --warning-soft: rgba(250,178,25,0.20);
+    --serious: #ec835a;
+    --serious-soft: rgba(236,131,90,0.20);
+    --critical: #d03b3b;
+    --critical-soft: rgba(208,59,59,0.22);
+    --neutral-status: #a8a69b;
+    --neutral-status-soft: rgba(255,255,255,0.10);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font:400 14px/1.5 'IBM Plex Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  h1,h2,h3{font-family:'Archivo', system-ui, sans-serif; margin:0; text-wrap:balance;}
+  a{color:var(--accent);}
+  button{font:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .wrap{max-width:1000px; margin:0 auto; padding:28px 24px 80px;}
+
+  .topbar{
+    display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    margin-bottom:20px; padding-bottom:18px; border-bottom:1px solid var(--border);
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px; background:var(--ink); color:var(--page);
+    display:flex; align-items:center; justify-content:center; font:800 15px/1 'Archivo', sans-serif; flex:none;
+  }
+  .brand h1{font-size:19px; font-weight:800; letter-spacing:-0.01em;}
+  .brand .tag{display:block; font:500 12px/1.4 'IBM Plex Sans'; color:var(--ink-muted); margin-top:2px;}
+  .topbar-links{display:flex; gap:14px; font-size:12.5px; font-weight:600;}
+  .topbar-links a{text-decoration:none;}
+  .topbar-links a:hover{text-decoration:underline;}
+
+  .switcher{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px;}
+  .switch-pill{
+    border:1px solid var(--border); background:var(--surface); color:var(--ink-secondary);
+    border-radius:999px; padding:6px 13px 6px 10px; font-size:12.5px; font-weight:600; cursor:pointer;
+    display:flex; align-items:center; gap:7px; text-decoration:none; transition:border-color .15s, color .15s, background .15s;
+  }
+  .switch-pill .dot{width:7px; height:7px; border-radius:50%; flex:none;}
+  .switch-pill:hover{border-color:var(--border-strong); color:var(--ink);}
+  .switch-pill.active{background:var(--ink); border-color:var(--ink); color:var(--page);}
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; padding:4px 10px 4px 8px; border-radius:999px;
+    font:600 11.5px/1 'IBM Plex Sans'; letter-spacing:.01em; white-space:nowrap; color:var(--ink);
+  }
+  .chip .dot{width:7px; height:7px; border-radius:50%; flex:none;}
+  .status-invest{background:var(--good-soft);} .status-invest .dot{background:var(--good);}
+  .status-hold{background:var(--neutral-status-soft);} .status-hold .dot{background:var(--neutral-status);}
+  .status-watch{background:var(--warning-soft);} .status-watch .dot{background:var(--warning);}
+  .status-restructure{background:var(--serious-soft);} .status-restructure .dot{background:var(--serious);}
+  .status-exit{background:var(--critical-soft);} .status-exit .dot{background:var(--critical);}
+  .status-progress{background:var(--accent-soft);} .status-progress .dot{background:var(--accent);}
+
+  .co-head{
+    background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px 24px;
+    box-shadow:var(--shadow); margin-bottom:24px;
+  }
+  .co-title{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .co-title h2{font-size:22px;}
+  .co-sub{margin-top:6px; font-size:12.5px; color:var(--ink-muted);}
+  .co-sub span{color:var(--ink-secondary); font-weight:600;}
+
+  .section{margin-bottom:32px;}
+  .section h3{font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-muted); font-weight:700; margin-bottom:4px;}
+  .section .sub{font-size:12px; color:var(--ink-muted); margin-bottom:14px;}
+
+  .detail-kpis{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1px; background:var(--border);
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+  }
+  .detail-kpis .k{background:var(--surface-2); padding:12px 14px;}
+  .detail-kpis .k .l{font-size:11px; color:var(--ink-muted);}
+  .detail-kpis .k .v{font-family:'IBM Plex Mono'; font-size:17px; font-weight:600; margin-top:4px;}
+  .detail-kpis .k .d{font-size:11px; margin-top:3px; font-weight:600;}
+  .detail-kpis .k .d.up{color:var(--good);} .detail-kpis .k .d.down{color:var(--critical);}
+
+  .oa-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:680px){ .oa-grid{grid-template-columns:1fr;} }
+  .oa-col{border:1px solid var(--border); border-radius:12px; background:var(--surface); overflow:hidden;}
+  .oa-col-head{padding:12px 14px; font:700 12px 'IBM Plex Sans'; border-bottom:1px solid var(--border); background:var(--surface-2);}
+  .oa-row{padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid var(--border);}
+  .oa-row:last-child{border-bottom:none;}
+  .oa-row .who{font-size:12.5px; color:var(--ink-secondary); max-width:60%;}
+  .oa-row .due{font-size:11px; color:var(--ink-muted); margin-top:2px;}
+  .oa-row .right{text-align:right;}
+  .oa-row .amount{font-family:'IBM Plex Mono'; font-size:13px; font-weight:600; font-variant-numeric:tabular-nums;}
+
+  .doc-drop{
+    border:1.5px dashed var(--border-strong); border-radius:12px; padding:22px 16px; text-align:center;
+    cursor:pointer; color:var(--ink-muted); font-size:12.5px; transition:border-color .15s, background .15s, color .15s;
+  }
+  .doc-drop:hover, .doc-drop:focus-visible{border-color:var(--accent); color:var(--ink-secondary); background:var(--accent-soft);}
+  .doc-drop svg{display:block; margin:0 auto 8px;}
+  .doc-drop strong{color:var(--ink-secondary); font-weight:600;}
+  .doc-drop .hint{margin-top:2px; font-size:11px;}
+  .doc-list{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
+  .doc-card{
+    border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; gap:12px;
+    align-items:flex-start; background:var(--surface-2); animation:doc-in .25s ease;
+  }
+  @keyframes doc-in{ from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;} }
+  .doc-card .icon{
+    flex:none; width:34px; height:34px; border-radius:8px; background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; color:var(--ink-muted);
+  }
+  .doc-card .body{flex:1; min-width:0;}
+  .doc-card .head{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:2px;}
+  .doc-card .name{font-weight:600; font-size:13px;}
+  .doc-card .meta{font-size:11.5px; color:var(--ink-muted);}
+  .doc-fields{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px;}
+  .doc-fields .f .l{font-size:10px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em;}
+  .doc-fields .f .v{font-family:'IBM Plex Mono'; font-size:12.5px; font-weight:500; margin-top:2px; font-variant-numeric:tabular-nums;}
+  .doc-fields .f .v.bad{color:var(--critical);}
+  .doc-note{margin-top:10px; font-size:12px; color:var(--ink); background:var(--critical-soft); border-radius:8px; padding:8px 10px; line-height:1.45;}
+  .doc-note b{display:block; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--critical); margin-bottom:3px;}
+  .doc-processing{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-muted); margin-top:8px;}
+  .doc-processing .spin{width:12px; height:12px; border-radius:50%; border:2px solid var(--border-strong); border-top-color:var(--accent); animation:doc-spin .7s linear infinite;}
+  @keyframes doc-spin{ to{transform:rotate(360deg);} }
+  @media (prefers-reduced-motion:reduce){ .doc-card{animation:none;} .doc-processing .spin{animation:none;} }
+
+  .table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface);}
+  table{border-collapse:collapse; width:100%; font-size:13px;}
+  thead th{
+    text-align:left; padding:10px 14px; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--ink-muted); font-weight:700; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  tbody td{padding:10px 14px; border-bottom:1px solid var(--border); vertical-align:middle; white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.num{font-family:'IBM Plex Mono'; font-variant-numeric:tabular-nums;}
+  td.name{font-weight:600;}
+
+  .checklist{display:flex; flex-direction:column; gap:8px;}
+  .cl-row{
+    display:flex; gap:12px; align-items:flex-start; border:1px solid var(--border); border-radius:12px;
+    padding:12px 14px; background:var(--surface);
+  }
+  .cl-icon{flex:none; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; margin-top:1px;}
+  .cl-icon.concluido{background:var(--good-soft); color:var(--good);}
+  .cl-icon.atencao{background:var(--critical-soft); color:var(--critical);}
+  .cl-icon.pendente{background:var(--neutral-status-soft); color:var(--neutral-status);}
+  .cl-body .item{font-size:13px; font-weight:500;}
+  .cl-body .note{font-size:11.5px; color:var(--ink-muted); margin-top:3px;}
+
+  .action-list{display:flex; flex-direction:column; gap:8px;}
+  .ac-row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; border:1px solid var(--border);
+    border-radius:12px; padding:12px 14px; background:var(--surface); flex-wrap:wrap;
+  }
+  .ac-row .title{font-size:13px; font-weight:600; flex:1; min-width:200px;}
+  .ac-row .meta{font-size:11.5px; color:var(--ink-muted); margin-top:2px;}
+
+  footer{margin-top:40px; padding-top:18px; border-top:1px solid var(--border); font-size:11.5px; color:var(--ink-muted);}
+</style>
+
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">F</div>
+      <div>
+        <h1>Ação & Auditoria</h1>
+        <span class="tag">Farol · nível 2 · dados por empresa</span>
+      </div>
+    </div>
+    <div class="topbar-links">
+      <a href="index.html">← Farol (visão geral)</a>
+      <a href="arquitetura.html">Camada de dados (referência técnica)</a>
+    </div>
+  </header>
+
+  <nav class="switcher" id="switcher"></nav>
+
+  <div id="content"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  function fmtBRL(v){
+    var sign = v < 0 ? '-' : '';
+    v = Math.abs(v);
+    if (v >= 1e6) return sign + 'R$ ' + (v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1}) + ' mi';
+    if (v >= 1e3) return sign + 'R$ ' + (v/1e3).toLocaleString('pt-BR',{maximumFractionDigits:1}) + ' mil';
+    return sign + 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+  }
+  function fmtBRLFull(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
+  function fmtSignedBRL(v){ return (v<0?'-':'+') + fmtBRLFull(Math.abs(v)); }
+  function fmtPct(v,d){ d = d===undefined?1:d; return v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}) + '%'; }
+  function fmtRatio(v){ return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + 'x'; }
+  function fmtMonths(v){ return v + (v===1?' mês':' meses'); }
+  function fmtPayback(v){ return v > 36 ? '> 36 meses' : fmtMonths(Math.round(v)); }
+  function noise(seed){ var x = Math.sin(seed)*10000; return x - Math.floor(x); }
+  function genSeries(base, growthPct, months, seed, vol){
+    var arr = [], v = base;
+    for (var i=0;i<months;i++){
+      if (i>0) v = v*(1+growthPct/100);
+      var n = (noise(seed*97 + i*13.7) - 0.5) * 2 * vol;
+      arr.push(Math.max(1, v*(1+n)));
+    }
+    return arr.map(function(x){ return Math.round(x); });
+  }
+
+  var MONTHS = ['set/25','out/25','nov/25','dez/25','jan/26','fev/26','mar/26','abr/26','mai/26','jun/26','jul/26','ago/26'];
+  var DOC_DATE = 'ago/2026';
+
+  var STATUS = {
+    invest:      {label:'Investir mais', order:0},
+    hold:        {label:'Manter',        order:1},
+    watch:       {label:'Observar',      order:2},
+    restructure: {label:'Reestruturar',  order:3},
+    exit:        {label:'Sair',          order:4}
+  };
+  var CL_STATUS = { concluido:'Concluído', atencao:'Atenção', pendente:'Pendente' };
+  var AC_STATUS = { a_fazer:{cls:'status-hold',label:'A fazer'}, em_andamento:{cls:'status-progress',label:'Em andamento'}, concluido:{cls:'status-invest',label:'Concluído'} };
+  var OPEN_STATUS = { em_dia:{cls:'status-hold',label:'Em dia'}, atrasado:{cls:'status-exit',label:'Atrasado'} };
+
+  /* ---------------- data (mesma base do Farol, para os números baterem) ---------------- */
+  var RAW = [
+    {id:'nortek', name:'Nortek Cloud', sector:'SaaS B2B · gestão de frotas',
+     mrr:[180000,8.5,3], cac:[1200,1,7], ltv:[7200,1.5,11],
+     churn:1.8, churnPrev:2.3, runway:18, invested:900000, equity:12, valuation:9200000, investedDate:'mar/2024',
+     customerCount:340, grossMargin:82, cashBalance:1050000, nrr:118,
+     bankVariancePct:-1, bankNote:null, status:'invest',
+     bottlenecks:['Time de vendas não escala no mesmo ritmo do produto — contratação de SDRs é o gargalo para manter o ritmo de crescimento.','Payback de CAC em torno de 5 meses é ótimo, mas o time de CS já está no limite para sustentar um NRR acima de 115%.'],
+     rationale:'Crescimento consistente, CAC sob controle e a melhor relação LTV/CAC do portfólio. Aporte adicional financia mais SDRs sem pressionar a margem.',
+     payables:[{who:'AWS — infraestrutura', amount:18400, due:'05/set', status:'em_dia'},{who:'Comissões de vendas', amount:22100, due:'10/set', status:'em_dia'}],
+     receivables:[{who:'Faturamento anual — 12 contas enterprise', amount:96000, due:'ao longo do mês', status:'em_dia'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'concluido', note:'Bate com o balancete.'},{item:'Validar renovação dos 3 maiores contratos anuais', status:'pendente', note:null}],
+     actions:[{title:'Abrir 2 vagas de SDR', owner:'Head de Vendas', due:'set/2026', status:'em_andamento'},{title:'Redesenhar onboarding de CS para sustentar NRR acima de 115%', owner:'Head de CS', due:'out/2026', status:'a_fazer'}]},
+    {id:'casapronta', name:'CasaPronta', sector:'Proptech · gestão de aluguel',
+     mrr:[95000,6,6], cac:[900,0.5,14], ltv:[4300,1,22],
+     churn:2.1, churnPrev:2.6, runway:22, invested:500000, equity:15, valuation:4100000, investedDate:'jun/2024',
+     customerCount:1900, grossMargin:70, cashBalance:780000, nrr:112,
+     bankVariancePct:1, bankNote:null, status:'invest',
+     bottlenecks:['Onboarding manual de novos imóveis trava a ativação — falta automação de cadastro via API das imobiliárias parceiras.','Margem bruta pressionada por suporte humano em disputas de contrato — pouco escalável no modelo atual.'],
+     rationale:'Retenção alta e expansão saudável dentro da base atual. Resolver o gargalo operacional destrava a próxima fase de crescimento.',
+     payables:[{who:'Suporte jurídico — disputas de contrato', amount:9800, due:'12/set', status:'em_dia'},{who:'Plataforma de assinatura eletrônica', amount:3200, due:'08/set', status:'em_dia'}],
+     receivables:[{who:'Taxas de gestão — 1.900 imóveis ativos', amount:74000, due:'todo dia 5', status:'em_dia'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'concluido', note:null},{item:'Auditar tempo médio de onboarding de novo imóvel', status:'pendente', note:null}],
+     actions:[{title:'Automatizar cadastro via API das imobiliárias parceiras', owner:'Head de Produto', due:'nov/2026', status:'a_fazer'},{title:'Padronizar processo de disputa para reduzir custo de suporte', owner:'Jurídico', due:'out/2026', status:'a_fazer'}]},
+    {id:'vivara', name:'Vivara Saúde', sector:'Healthtech · telemedicina',
+     mrr:[210000,3.2,9], cac:[1450,2,21], ltv:[4650,0.3,33],
+     churn:3.4, churnPrev:3.1, runway:14, invested:1200000, equity:9, valuation:7800000, investedDate:'jan/2023',
+     customerCount:5200, grossMargin:58, cashBalance:980000, nrr:101,
+     bankVariancePct:-2, bankNote:null, status:'hold',
+     bottlenecks:['Receita concentrada em poucos parceiros de convênio — risco se algum contrato não renovar.','Margem bruta de 58% é baixa para um SaaS por causa do custo de rede médica — difícil melhorar sem meter mais tecnologia entre paciente e médico.'],
+     rationale:'Operação estável e perto do equilíbrio, sem alavanca clara de crescimento acelerado. Manter a posição e cobrar plano de diversificação de receita.',
+     payables:[{who:'Rede de médicos credenciados', amount:112000, due:'20/set', status:'em_dia'},{who:'Licenças de prontuário eletrônico', amount:8400, due:'15/set', status:'em_dia'}],
+     receivables:[{who:'Repasse de convênios — 2 parceiros', amount:118000, due:'30/set', status:'em_dia'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'concluido', note:null},{item:'Mapear % de receita por parceiro de convênio', status:'pendente', note:null}],
+     actions:[{title:'Negociar contrato com 3º parceiro de convênio', owner:'Sócio-fundador', due:'nov/2026', status:'a_fazer'},{title:'Revisar plano de diversificação de receita do último board', owner:'CFO', due:'set/2026', status:'em_andamento'}]},
+    {id:'estuda', name:'Estuda+', sector:'Edtech · preparatório para vestibular',
+     mrr:[68000,2.5,12], cac:[310,1.2,28], ltv:[880,-0.2,44],
+     churn:5.6, churnPrev:5.2, runway:11, invested:350000, equity:18, valuation:1900000, investedDate:'set/2024',
+     customerCount:3400, grossMargin:75, cashBalance:320000, nrr:96,
+     bankVariancePct:0, bankNote:null, status:'hold',
+     bottlenecks:['Receita concentrada nos meses de vestibular deixa o caixa apertado no resto do ano.','NRR abaixo de 100% mostra que a base não compra mais ao longo do ano — falta um produto de manutenção fora de temporada.'],
+     rationale:'Unit economics saudável, mas a sazonalidade exige colchão de caixa maior. Manter e acompanhar o plano de receita recorrente fora de temporada.',
+     payables:[{who:'Produção de conteúdo — freelancers', amount:14200, due:'10/set', status:'em_dia'},{who:'Hospedagem de vídeo', amount:2600, due:'05/set', status:'em_dia'}],
+     receivables:[{who:'Assinaturas ativas — 3.400 alunos', amount:64000, due:'todo dia 1', status:'em_dia'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'concluido', note:null},{item:'Revisar colchão de caixa para os meses fora de temporada', status:'pendente', note:null}],
+     actions:[{title:'Lançar produto de manutenção fora da época de vestibular', owner:'Head de Produto', due:'jan/2027', status:'a_fazer'},{title:'Simular fluxo de caixa dos próximos 6 meses', owner:'CFO', due:'set/2026', status:'em_andamento'}]},
+    {id:'fibraverde', name:'Fibra Verde', sector:'D2C · moda sustentável',
+     mrr:[54000,1.8,15], cac:[260,2.5,35], ltv:[620,-0.5,55],
+     churn:6.2, churnPrev:5.0, runway:9, invested:260000, equity:20, valuation:1100000, investedDate:'ago/2023',
+     customerCount:2600, grossMargin:42, cashBalance:190000, nrr:92,
+     bankVariancePct:-2, bankNote:null, status:'hold',
+     bottlenecks:['CAC em alta por saturação dos criativos no Meta Ads — falta diversificar canais de aquisição.','Margem bruta de 42% deixa pouca gordura para financiar mídia paga mais cara.'],
+     rationale:'Ainda dentro da faixa saudável, mas a piora recente do CAC pede atenção já na próxima revisão trimestral.',
+     payables:[{who:'Meta Ads', amount:19800, due:'toda semana', status:'em_dia'},{who:'Fornecedor de tecidos sustentáveis', amount:26400, due:'18/set', status:'em_dia'}],
+     receivables:[{who:'Clube de assinatura — vendas recorrentes', amount:31000, due:'todo dia 10', status:'em_dia'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'concluido', note:null},{item:'Comparar CAC por canal nos últimos 3 meses', status:'pendente', note:null}],
+     actions:[{title:'Testar 2 canais de aquisição além do Meta Ads', owner:'Head de Marketing', due:'out/2026', status:'a_fazer'},{title:'Revisar teto de CAC aceitável dada a margem de 42%', owner:'CFO', due:'set/2026', status:'a_fazer'}]},
+    {id:'colheita', name:'Colheita Certa', sector:'Agtech · crédito agrícola',
+     mrr:[130000,4,18], cac:[2100,5,42], ltv:[9800,0.5,66],
+     churn:2.8, churnPrev:2.5, runway:7, invested:800000, equity:14, valuation:5200000, investedDate:'fev/2024',
+     customerCount:210, grossMargin:65, cashBalance:420000, nrr:108,
+     bankVariancePct:1, bankNote:null, status:'watch',
+     bottlenecks:['Expansão para novas regiões elevou o custo de aquisição mais rápido do que o funil de qualificação conseguiu acompanhar.','Caixa para 7 meses não dá tempo para o CAC voltar a cair no ritmo orgânico atual.'],
+     rationale:'A melhor relação LTV/CAC do portfólio, mas o runway curto para o ritmo de queima atual pede cautela: só investir mais após o CAC estabilizar ou com uma nova rodada garantida.',
+     payables:[{who:'Equipe de campo — agrônomos', amount:48000, due:'05/set', status:'em_dia'},{who:'Seguro da carteira de crédito', amount:16500, due:'22/set', status:'em_dia'}],
+     receivables:[{who:'Amortizações — 210 produtores rurais', amount:142000, due:'ao longo do mês', status:'em_dia'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'concluido', note:null},{item:'Auditar funil de qualificação de leads nas novas regiões', status:'pendente', note:null}],
+     actions:[{title:'Pausar expansão para novas regiões até CAC estabilizar', owner:'Sócio-fundador', due:'set/2026', status:'em_andamento'},{title:'Avaliar necessidade de nova rodada dado o runway de 7 meses', owner:'CFO', due:'out/2026', status:'a_fazer'}]},
+    {id:'pagafacil', name:'PagaFácil', sector:'Fintech · meios de pagamento PME',
+     mrr:[240000,3.5,21], cac:[980,4.5,49], ltv:[2050,-1,77],
+     churn:4.8, churnPrev:3.5, runway:8, invested:1500000, equity:11, valuation:6300000, investedDate:'out/2022',
+     customerCount:6200, grossMargin:55, cashBalance:640000, nrr:90,
+     bankVariancePct:-19, bankNote:'Parte do caixa reportado inclui recebíveis de maquininha ainda não liquidados pelos parceiros.', status:'watch',
+     bottlenecks:['Renegociação de comissão com os parceiros de maquininha encareceu o principal canal de aquisição.','NRR de 90% indica contração na base — clientes reduzindo volume transacionado, não só cancelando.'],
+     rationale:'A relação LTV/CAC vem piorando de forma consistente. Segurar novo aporte até haver sinal claro de correção no custo de aquisição.',
+     payables:[{who:'Comissão de parceiros de maquininha', amount:74000, due:'toda semana', status:'em_dia'},{who:'Compliance / PCI-DSS', amount:11000, due:'15/set', status:'em_dia'}],
+     receivables:[{who:'Recebíveis de maquininha (parceiros)', amount:118000, due:'D+30', status:'atrasado'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'atencao', note:'Extrato 19% abaixo do balancete — ver documentos abaixo.'},{item:'Revisar contrato de comissão com parceiros de maquininha', status:'pendente', note:null}],
+     actions:[{title:'Renegociar comissão com parceiros de maquininha', owner:'Head Comercial', due:'set/2026', status:'em_andamento'},{title:'Investigar por que o NRR caiu para 90%', owner:'Head de CS', due:'out/2026', status:'a_fazer'}]},
+    {id:'rotaativa', name:'Rota Ativa', sector:'Logtech · roteirização de última milha',
+     mrr:[88000,-0.5,24], cac:[740,3,56], ltv:[1180,-1.5,88],
+     churn:7.4, churnPrev:5.8, runway:6, invested:600000, equity:22, valuation:1400000, investedDate:'mai/2023',
+     customerCount:145, grossMargin:38, cashBalance:210000, nrr:78,
+     bankVariancePct:-29, bankNote:'Fornecedores de combustível e manutenção de frota em atraso não aparecem no balancete enviado.', status:'restructure',
+     bottlenecks:['Churn elevado — clientes saem após poucos meses por falta de integração com os ERPs que já usam no dia a dia.','Margem bruta de 38% some rápido com o CAC subindo — cada cliente novo demora mais para pagar a própria aquisição.'],
+     rationale:'MRR estagnado, CAC subindo e churn alto ao mesmo tempo. Exigir um plano de reestruturação focado em integração antes de qualquer novo aporte.',
+     payables:[{who:'Fornecedor de combustível', amount:38000, due:'vencido', status:'atrasado'},{who:'Manutenção de frota', amount:21000, due:'vencido', status:'atrasado'}],
+     receivables:[{who:'Faturamento de rotas — 145 clientes', amount:88000, due:'todo dia 5', status:'em_dia'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'atencao', note:'Extrato 29% abaixo do balancete — fornecedores em atraso não constam.'},{item:'Mapear todos os fornecedores em atraso', status:'pendente', note:null}],
+     actions:[{title:'Negociar prazo com fornecedores de combustível e manutenção', owner:'CFO', due:'set/2026', status:'em_andamento'},{title:'Priorizar integração com os 2 ERPs mais usados pelos clientes', owner:'Head de Produto', due:'nov/2026', status:'a_fazer'}]},
+    {id:'bazarlocal', name:'Bazar Local', sector:'Marketplace · artesanato regional',
+     mrr:[42000,-2.8,27], cac:[410,3.5,63], ltv:[340,-2,99],
+     churn:9.1, churnPrev:7.0, runway:4, invested:400000, equity:25, valuation:300000, investedDate:'jul/2022',
+     customerCount:5100, grossMargin:30, cashBalance:68000, nrr:71,
+     bankVariancePct:-40, bankNote:'Balancete não refletia um aporte-ponte de sócios já consumido — o saldo real é bem menor que o reportado.', status:'exit',
+     bottlenecks:['LTV abaixo do CAC — cada cliente novo dá prejuízo, e a oferta não tem diferenciação frente a marketplaces maiores.','Caixa para 4 meses não sobrevive a um novo ciclo de captação nesse ritmo de queima.'],
+     rationale:'Unit economics negativa e caixa curto. Sem sinal de correção estrutural, o caminho recomendado é negociar a saída antes que o caixa se esgote.',
+     payables:[{who:'Logística de entrega — parceiros', amount:9200, due:'vencido', status:'atrasado'},{who:'Plataforma de e-commerce', amount:4100, due:'12/set', status:'em_dia'}],
+     receivables:[{who:'Repasse de vendedores — comissão do mês', amount:12000, due:'vencido', status:'atrasado'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'atencao', note:'Extrato 40% abaixo do balancete — aporte-ponte já consumido.'},{item:'Levantar todas as dívidas em aberto para negociação de saída', status:'pendente', note:null}],
+     actions:[{title:'Iniciar conversas de M&A ou encerramento ordenado', owner:'Sócio-fundador', due:'set/2026', status:'a_fazer'},{title:'Congelar novos gastos de aquisição de cliente', owner:'CFO', due:'imediato', status:'em_andamento'}]},
+    {id:'pratocerto', name:'Prato Certo', sector:'Foodtech · assinatura de refeições',
+     mrr:[76000,-3.5,30], cac:[520,2,70], ltv:[610,-3,110],
+     churn:11.5, churnPrev:8.9, runway:3, invested:550000, equity:19, valuation:250000, investedDate:'nov/2022',
+     customerCount:2800, grossMargin:22, cashBalance:54000, nrr:68,
+     bankVariancePct:-3, bankNote:null, status:'exit',
+     bottlenecks:['Qualidade de entrega inconsistente gera cancelamento já no segundo ciclo de assinatura.','Margem bruta de 22% mal cobre o CAC mesmo sem churn — o modelo de unidade não fecha na estrutura atual de entrega.'],
+     rationale:'MRR em queda com churn de dois dígitos e runway curto — não há tempo para reverter o quadro operando como está. Recomenda-se iniciar o processo de saída.',
+     payables:[{who:'Fornecedores de insumos', amount:14800, due:'vencido', status:'atrasado'},{who:'Parceiros de entrega — motoboys', amount:9600, due:'vencido', status:'atrasado'}],
+     receivables:[{who:'Assinaturas ativas — 2.800 clientes', amount:38000, due:'todo dia 1', status:'em_dia'}],
+     checklist:[{item:'Confirmar saldo bancário via Open Finance', status:'concluido', note:null},{item:'Avaliar viabilidade de reduzir a operação antes de encerrar', status:'pendente', note:null}],
+     actions:[{title:'Iniciar processo de saída', owner:'Sócio-fundador', due:'set/2026', status:'a_fazer'},{title:'Negociar quitação com fornecedores em atraso', owner:'CFO', due:'set/2026', status:'em_andamento'}]}
+  ];
+
+  var companies = RAW.map(function(c){
+    var mrr = genSeries(c.mrr[0], c.mrr[1], 12, c.mrr[2], 0.02);
+    var cac = genSeries(c.cac[0], c.cac[1], 12, c.cac[2], 0.03);
+    var ltv = genSeries(c.ltv[0], c.ltv[1], 12, c.ltv[2], 0.02);
+    var ratio = ltv.map(function(l,i){ return l/cac[i]; });
+    var mrrNow = mrr[11];
+    var arpu = mrrNow / c.customerCount;
+    return {
+      id:c.id, name:c.name, sector:c.sector, status:c.status,
+      mrr:mrr, cac:cac, ltv:ltv, ratio:ratio,
+      mrrNow:mrrNow, mrrGrowth:(mrr[11]-mrr[10])/mrr[10]*100,
+      cacNow:cac[11], ltvNow:ltv[11], ratioNow:ratio[11],
+      churn:c.churn, churnPrev:c.churnPrev,
+      runway:c.runway, invested:c.invested, equity:c.equity, valuation:c.valuation, investedDate:c.investedDate,
+      bottlenecks:c.bottlenecks, rationale:c.rationale,
+      customerCount:c.customerCount, grossMargin:c.grossMargin, cashBalance:c.cashBalance, nrr:c.nrr,
+      arr:mrrNow*12, arpu:arpu, burnMonthly:c.cashBalance / c.runway,
+      cacPaybackMonths:cac[11] / (arpu * (c.grossMargin/100)),
+      bankVariancePct:c.bankVariancePct, bankNote:c.bankNote,
+      bankCash:Math.round(c.cashBalance * (1 + c.bankVariancePct/100)),
+      uploadedDocs:[],
+      payables:c.payables, receivables:c.receivables, checklist:c.checklist, actions:c.actions
+    };
+  });
+
+  function el(tag, cls, text){
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function statusChip(status){
+    var span = el('span','chip status-'+status);
+    span.appendChild(el('span','dot'));
+    span.appendChild(document.createTextNode(STATUS[status].label));
+    return span;
+  }
+
+  /* ---------------- documentos & conciliação (mesma lógica do Farol) ---------------- */
+  var DOC_STATUS = {
+    processed:  {chip:'status-hold',   label:'Processado'},
+    matches:    {chip:'status-invest', label:'Bate com o balancete'},
+    mismatch:   {chip:'status-exit',   label:'Divergência encontrada'},
+    processing: {chip:'status-watch',  label:'Processando…'}
+  };
+  function docChip(key){
+    var m = DOC_STATUS[key];
+    var span = el('span','chip '+m.chip);
+    span.appendChild(el('span','dot'));
+    span.appendChild(document.createTextNode(m.label));
+    return span;
+  }
+  var DOC_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5"/></svg>';
+
+  function baseDocsFor(c){
+    var hasMismatch = !!c.bankNote;
+    return [
+      {name:'Balancete (DRE) — '+DOC_DATE+'.pdf', type:'Contábil · enviado pela empresa', status:'processed',
+       fields:[['Receita do mês', fmtBRLFull(c.mrrNow)],['Resultado do mês (aprox.)', fmtSignedBRL(-c.burnMonthly)],['Caixa reportado', fmtBRLFull(c.cashBalance)]], note:null},
+      {name:'Extrato bancário — '+DOC_DATE+'.pdf', type:'Open Finance · leitura direta do banco', status: hasMismatch ? 'mismatch' : 'matches',
+       fields:[['Saldo final no banco', fmtBRLFull(c.bankCash)],['Diferença vs. balancete', fmtSignedBRL(c.bankCash - c.cashBalance)]], note:c.bankNote}
+    ];
+  }
+  function docCardEl(doc){
+    var card = el('div','doc-card');
+    var icon = el('div','icon'); icon.innerHTML = DOC_ICON;
+    card.appendChild(icon);
+    var body = el('div','body');
+    var head = el('div','head');
+    head.appendChild(el('span','name', doc.name));
+    head.appendChild(docChip(doc.status));
+    body.appendChild(head);
+    body.appendChild(el('div','meta', doc.type));
+    if (doc.status === 'processing'){
+      var pr = el('div','doc-processing');
+      pr.appendChild(el('span','spin'));
+      pr.appendChild(document.createTextNode('Lendo o documento e extraindo os números…'));
+      body.appendChild(pr);
+    } else {
+      var fields = el('div','doc-fields');
+      doc.fields.forEach(function(f){
+        var ff = el('div','f');
+        ff.appendChild(el('div','l', f[0]));
+        var bad = doc.status === 'mismatch' && f[0].indexOf('Diferença') === 0;
+        ff.appendChild(el('div','v'+(bad?' bad':''), f[1]));
+        fields.appendChild(ff);
+      });
+      body.appendChild(fields);
+      if (doc.note){
+        var note = el('div','doc-note');
+        note.appendChild(el('b',null,'O que a IA encontrou'));
+        note.appendChild(document.createTextNode(doc.note));
+        body.appendChild(note);
+      }
+    }
+    card.appendChild(body);
+    return card;
+  }
+  function renderDocs(container, c){
+    container.innerHTML = '';
+    var drop = el('div','doc-drop');
+    drop.tabIndex = 0; drop.setAttribute('role','button');
+    drop.innerHTML = DOC_ICON.replace('width="17" height="17"','width="20" height="20"');
+    drop.appendChild(el('strong',null,'Enviar novo documento'));
+    drop.appendChild(el('div','hint','PDF ou foto de balancete, DRE ou extrato — clique para simular o envio e a leitura por IA'));
+    var input = document.createElement('input');
+    input.type = 'file'; input.accept = '.pdf,image/*'; input.style.display = 'none';
+    drop.appendChild(input);
+    drop.addEventListener('click', function(){ input.click(); });
+    drop.addEventListener('keydown', function(e){ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); input.click(); } });
+    container.appendChild(drop);
+    var list = el('div','doc-list');
+    container.appendChild(list);
+    function paint(){
+      list.innerHTML = '';
+      c.uploadedDocs.concat(baseDocsFor(c)).forEach(function(doc){ list.appendChild(docCardEl(doc)); });
+    }
+    paint();
+    input.addEventListener('change', function(){
+      if (!input.files || !input.files[0]) return;
+      var pending = {name:input.files[0].name, type:'Enviado agora · em processamento', status:'processing', fields:[], note:null};
+      c.uploadedDocs.unshift(pending);
+      paint();
+      setTimeout(function(){
+        pending.status = 'matches';
+        pending.type = 'Conferido contra o Open Finance';
+        pending.fields = [['Caixa identificado', fmtBRLFull(c.bankCash)],['Diferença vs. dados atuais', fmtSignedBRL(0)]];
+        paint();
+      }, 1400);
+      input.value = '';
+    });
+  }
+
+  /* ---------------- switcher ---------------- */
+  function renderSwitcher(activeId){
+    var nav = document.getElementById('switcher');
+    nav.innerHTML = '';
+    companies.forEach(function(c){
+      var a = el('a','switch-pill'+(c.id===activeId?' active':''));
+      a.href = '#'+c.id;
+      var dot = el('span','dot');
+      dot.style.background = 'var(--' + ({invest:'good',hold:'neutral-status',watch:'warning',restructure:'serious',exit:'critical'}[c.status]) + ')';
+      a.appendChild(dot);
+      a.appendChild(document.createTextNode(c.name));
+      nav.appendChild(a);
+    });
+  }
+
+  /* ---------------- render company ---------------- */
+  function openAccountsCol(title, rows){
+    var col = el('div','oa-col');
+    col.appendChild(el('div','oa-col-head', title));
+    rows.forEach(function(r){
+      var row = el('div','oa-row');
+      var left = el('div');
+      left.appendChild(el('div','who', r.who));
+      left.appendChild(el('div','due', 'vence ' + r.due));
+      row.appendChild(left);
+      var right = el('div','right');
+      right.appendChild(el('div','amount', fmtBRLFull(r.amount)));
+      var st = OPEN_STATUS[r.status];
+      var chip = el('span','chip '+st.cls);
+      chip.appendChild(el('span','dot'));
+      chip.appendChild(document.createTextNode(st.label));
+      right.appendChild(chip);
+      row.appendChild(right);
+      col.appendChild(row);
+    });
+    return col;
+  }
+
+  function render(id){
+    var c = companies.filter(function(x){ return x.id === id; })[0] || companies[0];
+    renderSwitcher(c.id);
+
+    var root = document.getElementById('content');
+    root.innerHTML = '';
+
+    var head = el('div','co-head');
+    var title = el('div','co-title');
+    title.appendChild(el('h2',null,c.name));
+    title.appendChild(statusChip(c.status));
+    head.appendChild(title);
+    var sub = el('div','co-sub');
+    sub.innerHTML = c.sector + ' &nbsp;·&nbsp; aporte <span>'+fmtBRL(c.invested)+'</span> em '+c.investedDate+
+      ' &nbsp;·&nbsp; <span>'+c.equity+'%</span> de equity &nbsp;·&nbsp; valuation atual <span>'+fmtBRL(c.valuation)+'</span>';
+    head.appendChild(sub);
+    root.appendChild(head);
+
+    var s1 = el('div','section');
+    s1.appendChild(el('h3',null,'Financeiro & caixa'));
+    var kpis = el('div','detail-kpis');
+    [
+      ['ARR (receita anualizada)', fmtBRL(c.arr)],
+      ['Margem bruta', fmtPct(c.grossMargin,0)],
+      ['Clientes ativos', c.customerCount.toLocaleString('pt-BR')],
+      ['Ticket médio (ARPU)', fmtBRLFull(c.arpu)+'/mês'],
+      ['Payback de CAC', fmtPayback(c.cacPaybackMonths)],
+      ['NRR', fmtPct(c.nrr,0)],
+      ['Caixa em caixa', fmtBRL(c.cashBalance)],
+      ['Queima mensal', fmtBRL(c.burnMonthly)]
+    ].forEach(function(k){
+      var kk = el('div','k');
+      kk.appendChild(el('div','l',k[0]));
+      kk.appendChild(el('div','v',k[1]));
+      kpis.appendChild(kk);
+    });
+    s1.appendChild(kpis);
+    root.appendChild(s1);
+
+    var s2 = el('div','section');
+    s2.appendChild(el('h3',null,'Contas em aberto'));
+    s2.appendChild(el('div','sub','Maiores itens a pagar e a receber no momento — não é o razão completo, é o que pede ação agora'));
+    var grid = el('div','oa-grid');
+    grid.appendChild(openAccountsCol('A pagar', c.payables));
+    grid.appendChild(openAccountsCol('A receber', c.receivables));
+    s2.appendChild(grid);
+    root.appendChild(s2);
+
+    var s3 = el('div','section');
+    s3.appendChild(el('h3',null,'Documentos & conciliação contábil'));
+    s3.appendChild(el('div','sub','Balancete enviado pela empresa, lido por IA e cruzado contra o extrato bancário via Open Finance'));
+    var docContainer = el('div');
+    s3.appendChild(docContainer);
+    root.appendChild(s3);
+    renderDocs(docContainer, c);
+
+    var s4 = el('div','section');
+    s4.appendChild(el('h3',null,'Mês a mês'));
+    s4.appendChild(el('div','sub','MRR, CAC, LTV e a relação entre eles nos últimos 12 meses'));
+    var tw = el('div','table-wrap');
+    var table = el('table');
+    var thead = el('thead'); var tr = el('tr');
+    ['Mês','MRR','CAC','LTV','LTV/CAC'].forEach(function(h){ tr.appendChild(el('th',null,h)); });
+    thead.appendChild(tr); table.appendChild(thead);
+    var tbody = el('tbody');
+    for (var i=0;i<MONTHS.length;i++){
+      var row = el('tr');
+      row.appendChild(el('td','name',MONTHS[i]));
+      row.appendChild(el('td','num',fmtBRLFull(c.mrr[i])));
+      row.appendChild(el('td','num',fmtBRLFull(c.cac[i])));
+      row.appendChild(el('td','num',fmtBRLFull(c.ltv[i])));
+      row.appendChild(el('td','num',fmtRatio(c.ratio[i])));
+      tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    tw.appendChild(table);
+    s4.appendChild(tw);
+    root.appendChild(s4);
+
+    var s5 = el('div','section');
+    s5.appendChild(el('h3',null,'Trilha de auditoria'));
+    s5.appendChild(el('div','sub','O que já foi conferido nesta empresa e o que ainda falta'));
+    var cl = el('div','checklist');
+    c.checklist.forEach(function(item){
+      var row = el('div','cl-row');
+      var icon = el('div','cl-icon '+item.status, item.status==='concluido'?'✓':(item.status==='atencao'?'!':'○'));
+      row.appendChild(icon);
+      var body = el('div','cl-body');
+      body.appendChild(el('div','item', item.item + ' — ' + CL_STATUS[item.status]));
+      if (item.note) body.appendChild(el('div','note', item.note));
+      row.appendChild(body);
+      cl.appendChild(row);
+    });
+    s5.appendChild(cl);
+    root.appendChild(s5);
+
+    var s6 = el('div','section');
+    s6.appendChild(el('h3',null,'Plano de ação'));
+    s6.appendChild(el('div','sub','O que sai do "gargalo identificado" no Farol e vira tarefa com dono e prazo'));
+    var al = el('div','action-list');
+    c.actions.forEach(function(a){
+      var row = el('div','ac-row');
+      var left = el('div');
+      left.appendChild(el('div','title', a.title));
+      left.appendChild(el('div','meta', a.owner + ' · prazo ' + a.due));
+      row.appendChild(left);
+      var st = AC_STATUS[a.status];
+      var chip = el('span','chip '+st.cls);
+      chip.appendChild(el('span','dot'));
+      chip.appendChild(document.createTextNode(st.label));
+      row.appendChild(chip);
+      al.appendChild(row);
+    });
+    s6.appendChild(al);
+    root.appendChild(s6);
+
+    var foot = el('div','section');
+    var link = el('a', null, '← Ver ' + c.name + ' na visão estratégica (Farol)');
+    link.href = 'index.html#' + c.id;
+    foot.appendChild(link);
+    root.appendChild(foot);
+  }
+
+  function currentId(){
+    var id = location.hash.replace('#','');
+    return companies.some(function(c){ return c.id===id; }) ? id : companies[0].id;
+  }
+
+  window.addEventListener('hashchange', function(){ render(currentId()); });
+  render(currentId());
+})();
+</script>

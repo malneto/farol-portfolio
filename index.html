@@ -272,6 +272,46 @@
     content:''; position:absolute; left:0; top:7px; width:6px; height:6px; border-radius:50%; background:var(--serious);
   }
 
+  .doc-drop{
+    border:1.5px dashed var(--border-strong); border-radius:12px; padding:22px 16px; text-align:center;
+    cursor:pointer; color:var(--ink-muted); font-size:12.5px; transition:border-color .15s, background .15s, color .15s;
+  }
+  .doc-drop:hover, .doc-drop:focus-visible{border-color:var(--accent); color:var(--ink-secondary); background:var(--accent-soft);}
+  .doc-drop svg{display:block; margin:0 auto 8px;}
+  .doc-drop strong{color:var(--ink-secondary); font-weight:600;}
+  .doc-drop .hint{margin-top:2px; font-size:11px;}
+
+  .doc-list{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
+  .doc-card{
+    border:1px solid var(--border); border-radius:12px; padding:14px 16px; display:flex; gap:12px;
+    align-items:flex-start; background:var(--surface-2); animation:doc-in .25s ease;
+  }
+  @keyframes doc-in{ from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;} }
+  .doc-card .icon{
+    flex:none; width:34px; height:34px; border-radius:8px; background:var(--surface); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; color:var(--ink-muted);
+  }
+  .doc-card .body{flex:1; min-width:0;}
+  .doc-card .head{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:2px;}
+  .doc-card .name{font-weight:600; font-size:13px;}
+  .doc-card .meta{font-size:11.5px; color:var(--ink-muted);}
+  .doc-fields{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:10px;}
+  .doc-fields .f .l{font-size:10px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em;}
+  .doc-fields .f .v{font-family:'IBM Plex Mono'; font-size:12.5px; font-weight:500; margin-top:2px; font-variant-numeric:tabular-nums;}
+  .doc-fields .f .v.bad{color:var(--critical);}
+  .doc-note{
+    margin-top:10px; font-size:12px; color:var(--ink); background:var(--critical-soft); border-radius:8px;
+    padding:8px 10px; line-height:1.45;
+  }
+  .doc-note b{display:block; font-size:10px; text-transform:uppercase; letter-spacing:.03em; color:var(--critical); margin-bottom:3px;}
+  .doc-processing{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-muted); margin-top:8px;}
+  .doc-processing .spin{
+    width:12px; height:12px; border-radius:50%; border:2px solid var(--border-strong); border-top-color:var(--accent);
+    animation:doc-spin .7s linear infinite;
+  }
+  @keyframes doc-spin{ to{transform:rotate(360deg);} }
+  @media (prefers-reduced-motion:reduce){ .doc-card{animation:none;} .doc-processing .spin{animation:none;} }
+
   .rationale-box{
     margin-top:22px; border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; gap:8px;
   }
@@ -378,9 +418,11 @@
     return sign + 'R$ ' + Math.round(v).toLocaleString('pt-BR');
   }
   function fmtBRLFull(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
+  function fmtSignedBRL(v){ return (v<0?'-':'+') + fmtBRLFull(Math.abs(v)); }
   function fmtPct(v,d){ d = d===undefined?1:d; return v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}) + '%'; }
   function fmtRatio(v){ return v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + 'x'; }
   function fmtMonths(v){ return v + (v===1?' mês':' meses'); }
+  function fmtPayback(v){ return v > 36 ? '> 36 meses' : fmtMonths(Math.round(v)); }
   function niceCeil(v){
     if (v<=0) return 1;
     var mag = Math.pow(10, Math.floor(Math.log10(v)));
@@ -400,6 +442,7 @@
   }
 
   var MONTHS = ['set/25','out/25','nov/25','dez/25','jan/26','fev/26','mar/26','abr/26','mai/26','jun/26','jul/26','ago/26'];
+  var DOC_DATE = 'ago/2026';
 
   var STATUS = {
     invest:      {label:'Investir mais', order:0},
@@ -415,6 +458,7 @@
      mrr:[180000,8.5,3], cac:[1200,1,7], ltv:[7200,1.5,11],
      churn:1.8, churnPrev:2.3, runway:18, invested:900000, equity:12, valuation:9200000, investedDate:'mar/2024',
      customerCount:340, grossMargin:82, cashBalance:1050000, nrr:118,
+     bankVariancePct:-1, bankNote:null,
      status:'invest',
      bottlenecks:[
        'Time de vendas não escala no mesmo ritmo do produto — contratação de SDRs é o gargalo para manter o ritmo de crescimento.',
@@ -424,6 +468,7 @@
      mrr:[95000,6,6], cac:[900,0.5,14], ltv:[4300,1,22],
      churn:2.1, churnPrev:2.6, runway:22, invested:500000, equity:15, valuation:4100000, investedDate:'jun/2024',
      customerCount:1900, grossMargin:70, cashBalance:780000, nrr:112,
+     bankVariancePct:1, bankNote:null,
      status:'invest',
      bottlenecks:[
        'Onboarding manual de novos imóveis trava a ativação — falta automação de cadastro via API das imobiliárias parceiras.',
@@ -433,6 +478,7 @@
      mrr:[210000,3.2,9], cac:[1450,2,21], ltv:[4650,0.3,33],
      churn:3.4, churnPrev:3.1, runway:14, invested:1200000, equity:9, valuation:7800000, investedDate:'jan/2023',
      customerCount:5200, grossMargin:58, cashBalance:980000, nrr:101,
+     bankVariancePct:-2, bankNote:null,
      status:'hold',
      bottlenecks:[
        'Receita concentrada em poucos parceiros de convênio — risco se algum contrato não renovar.',
@@ -442,6 +488,7 @@
      mrr:[68000,2.5,12], cac:[310,1.2,28], ltv:[880,-0.2,44],
      churn:5.6, churnPrev:5.2, runway:11, invested:350000, equity:18, valuation:1900000, investedDate:'set/2024',
      customerCount:3400, grossMargin:75, cashBalance:320000, nrr:96,
+     bankVariancePct:0, bankNote:null,
      status:'hold',
      bottlenecks:[
        'Receita concentrada nos meses de vestibular deixa o caixa apertado no resto do ano.',
@@ -451,6 +498,7 @@
      mrr:[54000,1.8,15], cac:[260,2.5,35], ltv:[620,-0.5,55],
      churn:6.2, churnPrev:5.0, runway:9, invested:260000, equity:20, valuation:1100000, investedDate:'ago/2023',
      customerCount:2600, grossMargin:42, cashBalance:190000, nrr:92,
+     bankVariancePct:-2, bankNote:null,
      status:'hold',
      bottlenecks:[
        'CAC em alta por saturação dos criativos no Meta Ads — falta diversificar canais de aquisição.',
@@ -460,6 +508,7 @@
      mrr:[130000,4,18], cac:[2100,5,42], ltv:[9800,0.5,66],
      churn:2.8, churnPrev:2.5, runway:7, invested:800000, equity:14, valuation:5200000, investedDate:'fev/2024',
      customerCount:210, grossMargin:65, cashBalance:420000, nrr:108,
+     bankVariancePct:1, bankNote:null,
      status:'watch',
      bottlenecks:[
        'Expansão para novas regiões elevou o custo de aquisição mais rápido do que o funil de qualificação conseguiu acompanhar.',
@@ -469,6 +518,7 @@
      mrr:[240000,3.5,21], cac:[980,4.5,49], ltv:[2050,-1,77],
      churn:4.8, churnPrev:3.5, runway:8, invested:1500000, equity:11, valuation:6300000, investedDate:'out/2022',
      customerCount:6200, grossMargin:55, cashBalance:640000, nrr:90,
+     bankVariancePct:-19, bankNote:'Parte do caixa reportado inclui recebíveis de maquininha ainda não liquidados pelos parceiros.',
      status:'watch',
      bottlenecks:[
        'Renegociação de comissão com os parceiros de maquininha encareceu o principal canal de aquisição.',
@@ -478,6 +528,7 @@
      mrr:[88000,-0.5,24], cac:[740,3,56], ltv:[1180,-1.5,88],
      churn:7.4, churnPrev:5.8, runway:6, invested:600000, equity:22, valuation:1400000, investedDate:'mai/2023',
      customerCount:145, grossMargin:38, cashBalance:210000, nrr:78,
+     bankVariancePct:-29, bankNote:'Fornecedores de combustível e manutenção de frota em atraso não aparecem no balancete enviado.',
      status:'restructure',
      bottlenecks:[
        'Churn elevado — clientes saem após poucos meses por falta de integração com os ERPs que já usam no dia a dia.',
@@ -487,6 +538,7 @@
      mrr:[42000,-2.8,27], cac:[410,3.5,63], ltv:[340,-2,99],
      churn:9.1, churnPrev:7.0, runway:4, invested:400000, equity:25, valuation:300000, investedDate:'jul/2022',
      customerCount:5100, grossMargin:30, cashBalance:68000, nrr:71,
+     bankVariancePct:-40, bankNote:'Balancete não refletia um aporte-ponte de sócios já consumido — o saldo real é bem menor que o reportado.',
      status:'exit',
      bottlenecks:[
        'LTV abaixo do CAC — cada cliente novo dá prejuízo, e a oferta não tem diferenciação frente a marketplaces maiores.',
@@ -496,6 +548,7 @@
      mrr:[76000,-3.5,30], cac:[520,2,70], ltv:[610,-3,110],
      churn:11.5, churnPrev:8.9, runway:3, invested:550000, equity:19, valuation:250000, investedDate:'nov/2022',
      customerCount:2800, grossMargin:22, cashBalance:54000, nrr:68,
+     bankVariancePct:-3, bankNote:null,
      status:'exit',
      bottlenecks:[
        'Qualidade de entrega inconsistente gera cancelamento já no segundo ciclo de assinatura.',
@@ -522,7 +575,10 @@
       arr:mrrNow*12,
       arpu:arpu,
       burnMonthly:c.cashBalance / c.runway,
-      cacPaybackMonths:cac[11] / (arpu * (c.grossMargin/100))
+      cacPaybackMonths:cac[11] / (arpu * (c.grossMargin/100)),
+      bankVariancePct:c.bankVariancePct, bankNote:c.bankNote,
+      bankCash:Math.round(c.cashBalance * (1 + c.bankVariancePct/100)),
+      uploadedDocs:[]
     };
   });
 
@@ -814,6 +870,134 @@
     overlay.addEventListener('mouseleave', hide);
   }
 
+  /* ---------------- documentos & conciliação contábil ---------------- */
+  var DOC_STATUS = {
+    processed:   {chip:'status-hold',   label:'Processado'},
+    matches:     {chip:'status-invest', label:'Bate com o balancete'},
+    mismatch:    {chip:'status-exit',   label:'Divergência encontrada'},
+    processing:  {chip:'status-watch',  label:'Processando…'}
+  };
+  function docChip(key){
+    var m = DOC_STATUS[key];
+    var span = el('span','chip '+m.chip);
+    span.appendChild(el('span','dot'));
+    span.appendChild(document.createTextNode(m.label));
+    return span;
+  }
+  var DOC_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5"/></svg>';
+
+  function baseDocsFor(c){
+    var hasMismatch = !!c.bankNote;
+    return [
+      {
+        key:'balancete', name:'Balancete (DRE) — '+DOC_DATE+'.pdf', type:'Contábil · enviado pela empresa',
+        status:'processed',
+        fields:[
+          ['Receita do mês', fmtBRLFull(c.mrrNow)],
+          ['Resultado do mês (aprox.)', fmtSignedBRL(-c.burnMonthly)],
+          ['Caixa reportado', fmtBRLFull(c.cashBalance)]
+        ],
+        note:null
+      },
+      {
+        key:'extrato', name:'Extrato bancário — '+DOC_DATE+'.pdf', type:'Open Finance · leitura direta do banco',
+        status: hasMismatch ? 'mismatch' : 'matches',
+        fields:[
+          ['Saldo final no banco', fmtBRLFull(c.bankCash)],
+          ['Diferença vs. balancete', fmtSignedBRL(c.bankCash - c.cashBalance)]
+        ],
+        note: c.bankNote
+      }
+    ];
+  }
+
+  function docCardEl(doc){
+    var card = el('div','doc-card');
+    var icon = el('div','icon'); icon.innerHTML = DOC_ICON;
+    card.appendChild(icon);
+    var body = el('div','body');
+    var head = el('div','head');
+    head.appendChild(el('span','name', doc.name));
+    head.appendChild(docChip(doc.status));
+    body.appendChild(head);
+    body.appendChild(el('div','meta', doc.type));
+
+    if (doc.status === 'processing'){
+      var pr = el('div','doc-processing');
+      pr.appendChild(el('span','spin'));
+      pr.appendChild(document.createTextNode('Lendo o documento e extraindo os números…'));
+      body.appendChild(pr);
+    } else {
+      var fields = el('div','doc-fields');
+      doc.fields.forEach(function(f){
+        var ff = el('div','f');
+        ff.appendChild(el('div','l', f[0]));
+        var bad = doc.status === 'mismatch' && f[0].indexOf('Diferença') === 0;
+        ff.appendChild(el('div','v'+(bad?' bad':''), f[1]));
+        fields.appendChild(ff);
+      });
+      body.appendChild(fields);
+      if (doc.note){
+        var note = el('div','doc-note');
+        note.appendChild(el('b',null,'O que a IA encontrou'));
+        note.appendChild(document.createTextNode(doc.note));
+        body.appendChild(note);
+      }
+    }
+    card.appendChild(body);
+    return card;
+  }
+
+  function renderDocs(container, c){
+    container.innerHTML = '';
+
+    var drop = el('div','doc-drop');
+    drop.tabIndex = 0; drop.setAttribute('role','button');
+    drop.innerHTML = DOC_ICON.replace('width="17" height="17"','width="20" height="20"');
+    var strong = el('strong',null,'Enviar novo documento');
+    var hint = el('div','hint','PDF ou foto de balancete, DRE ou extrato — clique para simular o envio e a leitura por IA');
+    drop.appendChild(strong);
+    drop.appendChild(hint);
+    var input = document.createElement('input');
+    input.type = 'file'; input.accept = '.pdf,image/*'; input.style.display = 'none';
+    drop.appendChild(input);
+    drop.addEventListener('click', function(){ input.click(); });
+    drop.addEventListener('keydown', function(e){ if (e.key==='Enter' || e.key===' '){ e.preventDefault(); input.click(); } });
+    container.appendChild(drop);
+
+    var list = el('div','doc-list');
+    container.appendChild(list);
+
+    function paint(){
+      list.innerHTML = '';
+      c.uploadedDocs.concat(baseDocsFor(c)).forEach(function(doc){
+        list.appendChild(docCardEl(doc));
+      });
+    }
+    paint();
+
+    input.addEventListener('change', function(){
+      if (!input.files || !input.files[0]) return;
+      var fname = input.files[0].name;
+      var pending = {
+        key:'upload-'+Date.now(), name:fname, type:'Enviado agora · em processamento',
+        status:'processing', fields:[], note:null
+      };
+      c.uploadedDocs.unshift(pending);
+      paint();
+      setTimeout(function(){
+        pending.status = 'matches';
+        pending.type = 'Conferido contra o Open Finance';
+        pending.fields = [
+          ['Caixa identificado', fmtBRLFull(c.bankCash)],
+          ['Diferença vs. dados atuais', fmtSignedBRL(0)]
+        ];
+        paint();
+      }, 1400);
+      input.value = '';
+    });
+  }
+
   /* ---------------- detail panel ---------------- */
   function openDetail(id, opts){
     opts = opts || {};
@@ -873,7 +1057,7 @@
       {l:'Margem bruta', v:fmtPct(c.grossMargin,0)},
       {l:'Clientes ativos', v:c.customerCount.toLocaleString('pt-BR')},
       {l:'Ticket médio (ARPU)', v:fmtBRLFull(c.arpu)+'/mês'},
-      {l:'Payback de CAC', v:fmtMonths(Math.round(c.cacPaybackMonths))},
+      {l:'Payback de CAC', v:fmtPayback(c.cacPaybackMonths)},
       {l:'NRR (retenção de receita)', v:fmtPct(c.nrr,0), d: c.nrr>=100 ? 'expansão líquida' : 'contração líquida', up:c.nrr>=100},
       {l:'Caixa em caixa', v:fmtBRL(c.cashBalance)},
       {l:'Queima mensal', v:fmtBRL(c.burnMonthly)}
@@ -943,6 +1127,14 @@
     mTableWrap.appendChild(mTable);
     monthBlock.appendChild(mTableWrap);
     d.appendChild(monthBlock);
+
+    var docBlock = el('div','chart-block');
+    docBlock.appendChild(el('h4',null,'Documentos & conciliação contábil'));
+    docBlock.appendChild(el('div','sub','Balancete enviado pela empresa, lido por IA e cruzado contra o extrato bancário via Open Finance'));
+    var docContainer = el('div');
+    docBlock.appendChild(docContainer);
+    d.appendChild(docBlock);
+    renderDocs(docContainer, c);
 
     var rb = el('div','rationale-box rb-'+c.status);
     var rhead = el('div','head');
